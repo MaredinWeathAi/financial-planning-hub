@@ -1445,31 +1445,31 @@
                 <!-- PAGE: Clients -->
                 <div id="page-clients" class="page" >
                     <div class="flex-between mb-4">
-                        <h2 style="font-size: 20px; font-weight: 600;">Manage Clients</h2>
-                        <button class="btn btn-primary" onclick="openModal('modal-create-client')">
+                        <h2 style="font-size: 20px; font-weight: 600;">Clients &amp; Households</h2>
+                        <button class="btn btn-primary" onclick="window.open(PLANNING_APP_URL+'/individual/households','_blank')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            New Client
+                            Add Household
                         </button>
                     </div>
+                    <p style="color:#94a3b8; font-size:13px; margin-bottom:16px;">Live data from the planning app. Click <strong style="color:#e2e8f0;">Open</strong> to enter a client's full plan, or <strong style="color:#e2e8f0;">Add Household</strong> to create a new one.</p>
                     <div class="card">
                         <div class="table-container">
                             <table class="table" id="clientsTable">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Type</th>
+                                        <th>Household</th>
+                                        <th>Primary Client</th>
+                                        <th>Co-Client</th>
                                         <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="clientsTableBody">
                                     <tr>
-                                        <td colspan="6" class="text-center" style="padding: 40px;">Loading clients...</td>
+                                        <td colspan="5" class="text-center" style="padding: 40px;">Loading households...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -2347,32 +2347,40 @@
 
         // ==================== CLIENT FUNCTIONS ====================
         async function loadClients() {
-            const data = await apiCall('/api/clients');
             const tbody = document.getElementById('clientsTableBody');
-            if (!data || !data.data) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No clients found</td></tr>';
-                return;
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px; color:#94a3b8;">Loading households...</td></tr>';
+            try {
+                const resp = await fetch(PLANNING_APP_URL + '/api/households');
+                if (!resp.ok) throw new Error('Failed to fetch');
+                const households = await resp.json();
+                if (!households || households.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px;">No households found</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = households.map(h => {
+                    const primaryName = `${h.primary_first || ''} ${h.primary_last || ''}`.trim();
+                    const coName = h.co_first ? `${h.co_first} ${h.co_last || ''}`.trim() : '—';
+                    const householdLabel = h.co_first
+                        ? `${h.primary_last} & ${h.co_first} ${h.co_last || ''}`.trim()
+                        : `${primaryName}`;
+                    const deepLink = PLANNING_APP_URL + '/individual?hid=' + h.id;
+                    const editLink = PLANNING_APP_URL + '/individual/households';
+                    return `
+                        <tr>
+                            <td style="font-weight:500;">${householdLabel}</td>
+                            <td>${primaryName}</td>
+                            <td>${coName}</td>
+                            <td><span class="table-status"><span class="table-status-dot active"></span>Active</span></td>
+                            <td style="display:flex;gap:6px;">
+                                <button class="btn btn-sm btn-primary" onclick="window.open('${deepLink}','_blank')">Open</button>
+                                <button class="btn btn-sm btn-secondary" onclick="window.open('${editLink}','_blank')">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center" style="padding:40px; color:#f87171;">Could not load households from planning app.</td></tr>';
             }
-
-            tbody.innerHTML = data.data.map(client => {
-                const hasBiz = client.tags && client.tags.includes('business_linked');
-                return `
-                    <tr>
-                        <td>
-                            ${client.name}
-                            ${hasBiz ? '<span class="badge badge-business">B</span>' : ''}
-                        </td>
-                        <td>${client.email || '-'}</td>
-                        <td>${client.phone || '-'}</td>
-                        <td>${client.client_type || '-'}</td>
-                        <td><span class="table-status"><span class="table-status-dot active"></span>Active</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-primary" onclick="showClientDetail(${client.id})">View</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteClient(${client.id})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
         }
 
         async function createClient() {
@@ -3019,10 +3027,11 @@
         // Locally it runs at http://localhost:3001
         // In production, set it to the Railway URL of your planning app.
         const PILLAR_CONFIG = {
-            individual: 'https://web-production-fd95.up.railway.app',
+            individual: 'https://web-production-fd95.up.railway.app/individual',
             business: null,   // null = stay in this portal (manage businesses internally)
             analytics: null   // null = stay in this portal
         };
+        const PLANNING_APP_URL = 'https://web-production-fd95.up.railway.app';
 
         function openIndividual(e) {
             e.preventDefault();
