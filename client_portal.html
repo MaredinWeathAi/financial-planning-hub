@@ -1227,8 +1227,29 @@
                             <div class="nav-badge">3</div>
                         </button>
                     </li>
+                    <li class="nav-item" id="nav-business-plan" style="display: none;">
+                        <button class="nav-link" data-page="business-plan">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                            <span>Business Plan</span>
+                        </button>
+                    </li>
                 </ul>
             </nav>
+
+            <!-- Logout Button -->
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                <button id="logoutBtn" class="btn btn-secondary" style="width: 100%; justify-content: center;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -2081,6 +2102,50 @@
                     </div>
                 </div>
 
+                <!-- Business Plan Page -->
+                <div class="page" id="business-plan" style="display: none;">
+                    <h3 class="section-title">Business Plan Overview</h3>
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Business Information</h3>
+                            </div>
+                            <div style="padding: 1rem 0;">
+                                <div class="form-group">
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">Business Name</label>
+                                    <div id="biz-name" style="font-weight: 600; color: var(--text-primary);">-</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">Entity Type</label>
+                                    <div id="biz-entity" style="color: var(--text-primary);">-</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem; display: block;">Industry</label>
+                                    <div id="biz-industry" style="color: var(--text-primary);">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Key People</h3>
+                            </div>
+                            <div id="biz-people" style="padding: 1rem 0;">
+                                <div style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">Loading people...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Business Financials</h3>
+                        </div>
+                        <div id="biz-financials" style="padding: 1rem 0;">
+                            <div style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">Financial data loading...</div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -2108,15 +2173,51 @@
         async function initPortal() {
             // Check auth
             const auth = await apiGet('/api/auth/me');
-            if (!auth || !auth.success) {
-                // Allow demo mode - don't redirect, just use hardcoded data
-                console.log('Running in demo mode');
+            if (!auth || !auth.data) {
+                // Auth failed - redirect to login
+                window.location.href = '/login';
                 return;
             }
             currentUser = auth.data;
+            console.log('Auth successful, user:', currentUser.email);
+
+            // Load client data for the logged-in user
+            const clientsResp = await apiGet('/api/clients');
+            if (clientsResp && clientsResp.data) {
+                const client = clientsResp.data.find(c => c.email === currentUser.email);
+                if (client) {
+                    console.log('Found client:', client);
+                    // Update welcome message with client name
+                    const welcomeEl = document.querySelector('.welcome-text h2');
+                    if (welcomeEl) {
+                        welcomeEl.textContent = 'Welcome back, ' + (client.name || 'Client');
+                    }
+                    // Update profile avatar
+                    const avatar = document.querySelector('.profile-avatar');
+                    if (avatar && client.name) {
+                        const initials = client.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                        avatar.textContent = initials;
+                    }
+
+                    // Check if client has business linked
+                    if (client.tags && Array.isArray(client.tags)) {
+                        const bizTag = client.tags.find(tag => tag.startsWith('biz:'));
+                        if (bizTag) {
+                            const businessId = bizTag.replace('biz:', '');
+                            console.log('Client is linked to business:', businessId);
+                            // Show business plan nav item
+                            document.getElementById('nav-business-plan').style.display = 'block';
+                            // Store business ID for later use
+                            window.linkedBusinessId = businessId;
+                        }
+                    }
+
+                    currentUser.clientData = client;
+                }
+            }
 
             // Load portal settings
-            const settings = await apiGet('/api/portal/settings/' + currentUser.client_id);
+            const settings = await apiGet('/api/portal/settings/' + (currentUser.client_id || currentUser.id));
             if (settings && settings.success) {
                 portalSettings = settings.data;
                 applyPortalSettings();
@@ -2406,7 +2507,8 @@
                     'planning': 'Financial Planning',
                     'accounts': 'Accounts',
                     'documents': 'Document Vault',
-                    'messages': 'Messages'
+                    'messages': 'Messages',
+                    'business-plan': 'Business Plan'
                 };
 
                 document.getElementById('pageTitle').textContent = titles[pageId] || 'Dashboard';
@@ -2445,11 +2547,106 @@
             element.style.backgroundColor = 'rgba(99,102,241,0.12)';
         }
 
+        // Business Plan Page Loading
+        async function loadBusinessPlan(businessId) {
+            if (!businessId) return;
+
+            // Load business data
+            const bizResp = await apiGet('/api/business/' + businessId);
+            if (bizResp && bizResp.data) {
+                const biz = bizResp.data;
+                document.getElementById('biz-name').textContent = biz.name || '-';
+                document.getElementById('biz-entity').textContent = biz.entity_type || '-';
+                document.getElementById('biz-industry').textContent = biz.industry || '-';
+            }
+
+            // Load business people
+            const peopleResp = await apiGet('/api/business/' + businessId + '/people');
+            if (peopleResp && peopleResp.data && Array.isArray(peopleResp.data)) {
+                const peopleContainer = document.getElementById('biz-people');
+                if (peopleResp.data.length > 0) {
+                    peopleContainer.innerHTML = peopleResp.data.map(person => `
+                        <div style="padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.875rem; flex-shrink: 0;">
+                                ${(person.first_name ? person.first_name[0] : '') + (person.last_name ? person.last_name[0] : '')}
+                            </div>
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">${person.first_name || ''} ${person.last_name || ''}</div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">${person.person_type || 'Team Member'}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    peopleContainer.innerHTML = '<div style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">No team members found</div>';
+                }
+            }
+
+            // Load business financials
+            const financialsResp = await apiGet('/api/business/' + businessId + '/financials');
+            if (financialsResp && financialsResp.data) {
+                const financialsContainer = document.getElementById('biz-financials');
+                const fin = financialsResp.data;
+                financialsContainer.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Annual Revenue</div>
+                            <div style="font-weight: 700; font-size: 1.5rem; color: var(--text-primary);">${fin.annual_revenue ? '$' + (fin.annual_revenue / 1000000).toFixed(2) + 'M' : '-'}</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Annual Expenses</div>
+                            <div style="font-weight: 700; font-size: 1.5rem; color: var(--text-primary);">${fin.annual_expenses ? '$' + (fin.annual_expenses / 1000000).toFixed(2) + 'M' : '-'}</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Net Income</div>
+                            <div style="font-weight: 700; font-size: 1.5rem; color: var(--text-primary);">${fin.net_income ? '$' + (fin.net_income / 1000000).toFixed(2) + 'M' : '-'}</div>
+                        </div>
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                            <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">Profit Margin</div>
+                            <div style="font-weight: 700; font-size: 1.5rem; color: var(--text-primary);">${fin.profit_margin ? (fin.profit_margin * 100).toFixed(1) + '%' : '-'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Logout function
+        async function handleLogout() {
+            try {
+                const res = await fetch(API_BASE + '/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                // Redirect to login regardless of response
+                window.location.href = '/login';
+            } catch(e) {
+                console.warn('Logout failed:', e);
+                // Still redirect on error
+                window.location.href = '/login';
+            }
+        }
+
         // Initialize tooltips and interactions
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Portal loaded successfully');
             // Initialize API integration
             initPortal();
+
+            // Setup logout button
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', handleLogout);
+            }
+
+            // Setup business plan nav click handler
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const pageId = this.getAttribute('data-page');
+                    if (pageId === 'business-plan' && window.linkedBusinessId) {
+                        loadBusinessPlan(window.linkedBusinessId);
+                    }
+                });
+            });
         });
     </script>
 </body>

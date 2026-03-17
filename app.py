@@ -759,6 +759,207 @@ def business_financials_add(business_id: str):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# Business Ownership & Employees API
+# ═══════════════════════════════════════════════════════════════════════════
+
+@app.route("/api/business/<business_id>/people", methods=["GET"])
+@require_auth
+def business_people_list(business_id: str):
+    """List all people (owners, key employees, employees) for a business."""
+    try:
+        people_file = os.path.join(DATA_DIR, "business", f"{business_id}_people.json")
+        if not os.path.exists(people_file):
+            return api_response(True, data={"owners": [], "key_employees": [], "employees": []})
+        with open(people_file) as f:
+            return api_response(True, data=json.load(f))
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/business/<business_id>/people", methods=["POST"])
+@require_auth
+def business_people_add(business_id: str):
+    """Add a person (owner, key employee, or employee) to a business.
+    Also auto-creates them as an individual client with business_linked=true and a 'B' badge tag.
+    """
+    try:
+        import uuid
+        data = request.get_json() or {}
+
+        person_type = data.get("person_type", "employee")  # "owner", "key_employee", "employee"
+        if person_type not in ("owner", "key_employee", "employee"):
+            return api_response(False, error="person_type must be 'owner', 'key_employee', or 'employee'")
+
+        person = {
+            "id": f"per_{uuid.uuid4().hex[:8]}",
+            "person_type": person_type,
+            "business_id": business_id,
+            # Personal info
+            "first_name": data.get("first_name", ""),
+            "last_name": data.get("last_name", ""),
+            "email": data.get("email", ""),
+            "phone": data.get("phone", ""),
+            "date_of_birth": data.get("date_of_birth", ""),
+            "ssn_last4": data.get("ssn_last4", ""),
+            # Role info
+            "title": data.get("title", ""),
+            "ownership_percentage": data.get("ownership_percentage", 0.0),
+            "start_date": data.get("start_date", ""),
+            "salary": data.get("salary", 0.0),
+            "bonus": data.get("bonus", 0.0),
+            # Census info
+            "marital_status": data.get("marital_status", ""),
+            "dependents": data.get("dependents", 0),
+            "beneficiary": data.get("beneficiary", ""),
+            # Contributions
+            "individual_contribution": data.get("individual_contribution", 0.0),
+            "individual_contribution_type": data.get("individual_contribution_type", "percent"),  # "percent" or "dollar"
+            "corp_contribution": data.get("corp_contribution", 0.0),
+            "corp_contribution_type": data.get("corp_contribution_type", "percent"),
+            "corp_match_formula": data.get("corp_match_formula", ""),
+            # Metadata
+            "notes": data.get("notes", ""),
+            "active": True,
+            "created_at": datetime.now().isoformat(),
+            "linked_client_id": None,  # Will be set when auto-linked
+        }
+
+        # Load existing people
+        os.makedirs(os.path.join(DATA_DIR, "business"), exist_ok=True)
+        people_file = os.path.join(DATA_DIR, "business", f"{business_id}_people.json")
+        if os.path.exists(people_file):
+            with open(people_file) as f:
+                people_data = json.load(f)
+        else:
+            people_data = {"owners": [], "key_employees": [], "employees": []}
+
+        # Determine which list to add to
+        list_key = {"owner": "owners", "key_employee": "key_employees", "employee": "employees"}[person_type]
+        people_data[list_key].append(person)
+
+        with open(people_file, 'w') as f:
+            json.dump(people_data, f, indent=2)
+
+        # Auto-link: create as individual client with "B" badge
+        linked_client_id = None
+        full_name = f"{person['first_name']} {person['last_name']}".strip()
+        if full_name:
+            stores = get_data_stores()
+            # Check if client already exists by email or name
+            existing = None
+            if person["email"]:
+                existing = stores["clients"].get_by_email(person["email"])
+            if not existing and full_name:
+                existing = stores["clients"].get_by_name(full_name)
+
+            if existing:
+                # Update existing client with business link
+                if "business_linked" not in (existing.tags or []):
+                    existing.tags = existing.tags or []
+                    existing.tags.append("business_linked")
+                    existing.tags.append(f"biz:{business_id}")
+                    stores["clients"].update(existing)
+                linked_client_id = existing.id
+            else:
+                # Create new individual client
+                from clients import Client
+                new_client = Client(
+                    name=full_name,
+                    email=person.get("email", ""),
+                    phone=person.get("phone", ""),
+                    company="",
+                    tags=["business_linked", f"biz:{business_id}"],
+                    notes=f"Auto-created from business plan. Role: {person_type.replace('_', ' ').title()}",
+                    client_type="individual",
+                )
+                added = stores["clients"].add(new_client)
+                linked_client_id = added.id
+
+            # Update person record with linked client ID
+            person["linked_client_id"] = linked_client_id
+            with open(people_file, 'w') as f:
+                json.dump(people_data, f, indent=2)
+
+        return api_response(True, data={"person": person, "linked_client_id": linked_client_id}, status=201)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/business/<business_id>/people/<person_id>", methods=["PUT"])
+@require_auth
+def business_people_update(business_id: str, person_id: str):
+    """Update a person in a business."""
+    try:
+        people_file = os.path.join(DATA_DIR, "business", f"{business_id}_people.json")
+        if not os.path.exists(people_file):
+            return api_response(False, error="No people found for this business", status=404)
+
+        with open(people_file) as f:
+            people_data = json.load(f)
+
+        data = request.get_json() or {}
+        found = False
+
+        for list_key in ["owners", "key_employees", "employees"]:
+            for i, person in enumerate(people_data.get(list_key, [])):
+                if person["id"] == person_id:
+                    # Update all provided fields
+                    for key, value in data.items():
+                        if key not in ("id", "created_at", "linked_client_id"):
+                            person[key] = value
+                    person["updated_at"] = datetime.now().isoformat()
+                    people_data[list_key][i] = person
+                    found = True
+
+                    with open(people_file, 'w') as f:
+                        json.dump(people_data, f, indent=2)
+                    return api_response(True, data=person)
+
+        if not found:
+            return api_response(False, error="Person not found", status=404)
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/business/<business_id>/people/<person_id>", methods=["DELETE"])
+@require_auth
+def business_people_delete(business_id: str, person_id: str):
+    """Remove a person from a business."""
+    try:
+        people_file = os.path.join(DATA_DIR, "business", f"{business_id}_people.json")
+        if not os.path.exists(people_file):
+            return api_response(False, error="No people found for this business", status=404)
+
+        with open(people_file) as f:
+            people_data = json.load(f)
+
+        found = False
+        for list_key in ["owners", "key_employees", "employees"]:
+            for i, person in enumerate(people_data.get(list_key, [])):
+                if person["id"] == person_id:
+                    people_data[list_key].pop(i)
+                    found = True
+                    break
+            if found:
+                break
+
+        if not found:
+            return api_response(False, error="Person not found", status=404)
+
+        with open(people_file, 'w') as f:
+            json.dump(people_data, f, indent=2)
+
+        return api_response(True, data={"message": "Person removed"})
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # PDF Import API
 # ═══════════════════════════════════════════════════════════════════════════
 

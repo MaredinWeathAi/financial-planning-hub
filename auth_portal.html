@@ -993,11 +993,49 @@
             }
 
             clearErrors(prefix);
-            setTimeout(() => {
-                alert('Account created successfully! Please log in.');
-                toggleSetup(false, tabName);
-                document.getElementById(`${prefix}LoginForm`).reset();
-            }, 800);
+
+            const setupBtn = event.target.querySelector('button[type="submit"]') || event.target;
+            if (setupBtn.tagName === 'BUTTON') {
+                setupBtn.disabled = true;
+                setupBtn.innerHTML = '<div class="spinner"></div>';
+            }
+
+            const setupEmail = document.getElementById(`${prefix}Email`)?.value.trim() || '';
+
+            fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    email: setupEmail,
+                    password: newPassword,
+                    name: setupEmail.split('@')[0],
+                    role: prefix
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (setupBtn.tagName === 'BUTTON') {
+                    setupBtn.disabled = false;
+                    setupBtn.textContent = 'Create Account';
+                }
+                if (data.success) {
+                    if (prefix === 'advisor') {
+                        window.location.href = '/advisor';
+                    } else {
+                        window.location.href = '/portal';
+                    }
+                } else {
+                    alert(data.error || 'Signup failed. Please try again.');
+                }
+            })
+            .catch(err => {
+                if (setupBtn.tagName === 'BUTTON') {
+                    setupBtn.disabled = false;
+                    setupBtn.textContent = 'Create Account';
+                }
+                alert('Connection error. Please try again.');
+            });
         }
 
         function handleForgotPassword(tabName, event) {
