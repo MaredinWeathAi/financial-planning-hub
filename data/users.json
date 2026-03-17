@@ -8,6 +8,15 @@
       "name": "Administrator",
       "active": true,
       "created_at": "2026-02-26T12:24:05.848677"
+    },
+    {
+      "id": "usr_client1",
+      "email": "client@mgp.com",
+      "password_hash": "scrypt:32768:8:1$UpestcQwkXpuR7oq$4a0d38c9411e4e95005aa809874a61c73dae8bff4d2a6a9c0bb7fbb8e041afd00ad5e5ec5a76666df65e0cb92a498218a9c1572c06127b4761e3bad7ceabdd9a",
+      "role": "client",
+      "name": "Demo Client",
+      "active": true,
+      "created_at": "2026-03-17T00:00:00"
     }
   ]
 }

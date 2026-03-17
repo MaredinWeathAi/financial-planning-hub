@@ -122,7 +122,16 @@ def init_users_file():
                     "email": "admin@mgp.com",
                     "password_hash": generate_password_hash("admin"),
                     "role": "advisor",
-                    "name": "Administrator",
+                    "name": "Marcelo Zinn",
+                    "active": True,
+                    "created_at": datetime.now().isoformat(),
+                },
+                {
+                    "id": "usr_client1",
+                    "email": "client@mgp.com",
+                    "password_hash": generate_password_hash("client"),
+                    "role": "client",
+                    "name": "Demo Client",
                     "active": True,
                     "created_at": datetime.now().isoformat(),
                 }
@@ -352,6 +361,59 @@ def auth_login():
         session.permanent = True
 
         return api_response(True, data={"user_id": user["id"], "email": user["email"]})
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/auth/signup", methods=["POST"])
+def auth_signup():
+    """Create a new user account."""
+    try:
+        data = request.get_json() or {}
+        email = data.get("email", "").strip().lower()
+        password = data.get("password", "")
+        name = data.get("name", "").strip()
+        role = data.get("role", "client")  # default to client
+
+        if not email or not password:
+            return api_response(False, error="Email and password required")
+        if len(password) < 4:
+            return api_response(False, error="Password must be at least 4 characters")
+        if role not in ("client", "advisor"):
+            return api_response(False, error="Role must be 'client' or 'advisor'")
+
+        users_data = load_users()
+        # Check if email already exists
+        for u in users_data.get("users", []):
+            if u.get("email", "").lower() == email:
+                return api_response(False, error="An account with this email already exists")
+
+        import uuid
+        new_user = {
+            "id": f"usr_{uuid.uuid4().hex[:8]}",
+            "email": email,
+            "password_hash": generate_password_hash(password),
+            "role": role,
+            "name": name or email.split("@")[0].title(),
+            "active": True,
+            "created_at": datetime.now().isoformat(),
+        }
+        users_data["users"].append(new_user)
+        save_users(users_data)
+
+        # Auto-login after signup
+        session["user_id"] = new_user["id"]
+        session["email"] = new_user["email"]
+        session["role"] = new_user["role"]
+        session.permanent = True
+
+        return api_response(True, data={
+            "user_id": new_user["id"],
+            "email": new_user["email"],
+            "role": new_user["role"],
+            "message": "Account created successfully"
+        })
 
     except Exception as e:
         return api_response(False, error=str(e))
