@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maredin Wealth Advisors - Client & Advisor Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0f1a;
+            background-image:
+                linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.02) 25%, transparent 50%),
+                linear-gradient(45deg, rgba(99, 102, 241, 0.03) 0%, transparent 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #f1f5f9;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInDown 0.7s ease 0.1s backwards;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #b8964e 0%, #d4af7a 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(184, 150, 78, 0.2);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .logo-text .brand-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text .brand-subtitle {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            letter-spacing: 0px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .auth-card {
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeInUp 0.7s ease 0.2s backwards;
+        }
+
+        .tab-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 8px;
+            background: #0d1321;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .tab-btn {
+            padding: 10px 16px;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .tab-btn.active {
+            color: #f1f5f9;
+            background: #111827;
+            border-color: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #f1f5f9;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 32px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            z-index: 1;
+        }
+
+        .input-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 14px 12px 44px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            background: #1a2235;
+            color: #f1f5f9;
+        }
+
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder,
+        input[type="text"]::placeholder {
+            color: #64748b;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: #1a2235;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        input.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        input.error:focus {
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .password-toggle svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .password-toggle:hover {
+            color: #94a3b8;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #6366f1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+        }
+
+        .checkbox-input + label {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .checkbox-input + label a {
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .checkbox-input + label a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 24px;
+        }
+
+        .forgot-password a,
+        .setup-link {
+            font-size: 13px;
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .forgot-password a:hover,
+        .setup-link:hover {
+            color: #a5b4fc;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 48px;
+        }
+
+        .login-btn.advisor-btn {
+            background: linear-gradient(135deg, #b8964e 0%, #d4af7a 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(184, 150, 78, 0.15);
+        }
+
+        .login-btn.advisor-btn:hover {
+            box-shadow: 0 6px 16px rgba(184, 150, 78, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .login-btn.client-btn {
+            background: #6366f1;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
+
+        .login-btn.client-btn:hover {
+            background: #4f46e5;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .setup-section {
+            display: none;
+        }
+
+        .setup-section.show {
+            display: block;
+        }
+
+        .back-to-login {
+            display: none;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .back-to-login.show {
+            display: block;
+        }
+
+        .back-to-login a {
+            font-size: 13px;
+            color: #818cf8;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .back-to-login a:hover {
+            color: #a5b4fc;
+        }
+
+        .back-icon {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .forgot-section {
+            display: none;
+        }
+
+        .forgot-section.show {
+            display: block;
+        }
+
+        .success-message {
+            display: none;
+            padding: 12px 14px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 13px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #f1f5f9;
+        }
+
+        .create-account-prompt {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .create-account-prompt p {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .footer a {
+            color: #818cf8;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #a5b4fc;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .header {
+                margin-bottom: 32px;
+            }
+
+            .logo-wrapper {
+                margin-bottom: 16px;
+            }
+
+            .logo-text .brand-name {
+                font-size: 20px;
+            }
+
+            .tab-content {
+                padding: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .login-btn {
+                min-height: 44px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-wrapper">
+                <div class="logo-icon">M</div>
+                <div class="logo-text">
+                    <div class="brand-name">Maredin</div>
+                    <div class="brand-subtitle">Wealth Advisors</div>
+                </div>
+            </div>
+            <p>Premium Financial Planning</p>
+        </div>
+
+        <div class="auth-card">
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="client">Client Login</button>
+                <button class="tab-btn" data-tab="advisor">Advisor Login</button>
+            </div>
+
+            <div class="tab-content active" data-tab="client">
+                <div class="back-to-login" id="backToLoginClient">
+                    <a href="#" onclick="toggleSetup(false, 'client'); return false;">
+                        <svg class="back-icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        Back to Login
+                    </a>
+                </div>
+
+                <div class="login-section" id="clientLoginSection">
+                    <form id="clientLoginForm">
+                        <div class="form-group">
+                            <label for="clientEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+                                </span>
+                                <input type="email" id="clientEmail" placeholder="you@example.com" required>
+                            </div>
+                            <div class="error-message" id="clientEmailError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clientPassword">Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="clientPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('client')">
+                                    <svg id="clientPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="clientPasswordError"></div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="clientRemember" class="checkbox-input">
+                            <label for="clientRemember">Remember me</label>
+                        </div>
+
+                        <div class="forgot-password">
+                            <a href="#" onclick="toggleForgotPassword(true, 'client'); return false;">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="login-btn client-btn" id="clientLoginBtn">Sign In</button>
+
+                        <div class="create-account-prompt">
+                            <p>
+                                New to Maredin Wealth Advisors?
+                                <a href="#" class="setup-link" onclick="toggleSetup(true, 'client'); return false;">Create Account</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="setup-section" id="clientSetupSection">
+                    <form id="clientSetupForm">
+                        <h2 class="form-section-title">Create Your Account</h2>
+
+                        <div class="form-group">
+                            <label for="clientNewPassword">New Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="clientNewPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('clientNew')">
+                                    <svg id="clientNewPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="clientNewPasswordError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="clientConfirmPassword">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="clientConfirmPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('clientConfirm')">
+                                    <svg id="clientConfirmPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="clientConfirmPasswordError"></div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="clientAcceptTerms" class="checkbox-input" required>
+                            <label for="clientAcceptTerms">I agree to the <a href="#">Terms & Conditions</a></label>
+                        </div>
+
+                        <button type="submit" class="login-btn client-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="forgot-section" id="clientForgotSection">
+                    <form id="clientForgotForm">
+                        <h2 class="form-section-title">Reset Password</h2>
+
+                        <div class="success-message" id="clientForgotSuccess">Reset link sent to your email. Please check your inbox.</div>
+
+                        <div class="form-group">
+                            <label for="clientForgotEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+                                </span>
+                                <input type="email" id="clientForgotEmail" placeholder="you@example.com" required>
+                            </div>
+                            <div class="error-message" id="clientForgotEmailError"></div>
+                        </div>
+
+                        <button type="submit" class="login-btn client-btn" id="clientResetBtn">Send Reset Link</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-content" data-tab="advisor">
+                <div class="back-to-login" id="backToLoginAdvisor">
+                    <a href="#" onclick="toggleSetup(false, 'advisor'); return false;">
+                        <svg class="back-icon" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        Back to Login
+                    </a>
+                </div>
+
+                <div class="login-section" id="advisorLoginSection">
+                    <form id="advisorLoginForm">
+                        <div class="form-group">
+                            <label for="advisorEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+                                </span>
+                                <input type="email" id="advisorEmail" placeholder="you@example.com" required>
+                            </div>
+                            <div class="error-message" id="advisorEmailError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="advisorPassword">Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="advisorPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('advisor')">
+                                    <svg id="advisorPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="advisorPasswordError"></div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="advisorRemember" class="checkbox-input">
+                            <label for="advisorRemember">Remember me</label>
+                        </div>
+
+                        <div class="forgot-password">
+                            <a href="#" onclick="toggleForgotPassword(true, 'advisor'); return false;">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="login-btn advisor-btn" id="advisorLoginBtn">Sign In</button>
+
+                        <div class="create-account-prompt">
+                            <p>
+                                New to Maredin Wealth Advisors?
+                                <a href="#" class="setup-link" onclick="toggleSetup(true, 'advisor'); return false;">Create Account</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="setup-section" id="advisorSetupSection">
+                    <form id="advisorSetupForm">
+                        <h2 class="form-section-title">Create Your Account</h2>
+
+                        <div class="form-group">
+                            <label for="advisorNewPassword">New Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="advisorNewPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('advisorNew')">
+                                    <svg id="advisorNewPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="advisorNewPasswordError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="advisorConfirmPassword">Confirm Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </span>
+                                <input type="password" id="advisorConfirmPassword" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" onclick="togglePassword('advisorConfirm')">
+                                    <svg id="advisorConfirmPasswordIcon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div class="error-message" id="advisorConfirmPasswordError"></div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="advisorAcceptTerms" class="checkbox-input" required>
+                            <label for="advisorAcceptTerms">I agree to the <a href="#">Terms & Conditions</a></label>
+                        </div>
+
+                        <button type="submit" class="login-btn advisor-btn">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="forgot-section" id="advisorForgotSection">
+                    <form id="advisorForgotForm">
+                        <h2 class="form-section-title">Reset Password</h2>
+
+                        <div class="success-message" id="advisorForgotSuccess">Reset link sent to your email. Please check your inbox.</div>
+
+                        <div class="form-group">
+                            <label for="advisorForgotEmail">Email Address</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 6l10 7 10-7"/></svg>
+                                </span>
+                                <input type="email" id="advisorForgotEmail" placeholder="you@example.com" required>
+                            </div>
+                            <div class="error-message" id="advisorForgotEmailError"></div>
+                        </div>
+
+                        <button type="submit" class="login-btn advisor-btn" id="advisorResetBtn">Send Reset Link</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 Maredin Wealth Advisors. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTabNavigation();
+            setupFormHandlers();
+            loadRememberedEmail();
+        });
+
+        function setupTabNavigation() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    switchTab(tabName);
+                });
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelector(`.tab-content[data-tab="${tabName}"]`).classList.add('active');
+
+            resetTabForms(tabName);
+        }
+
+        function resetTabForms(tabName) {
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+            document.getElementById(`${prefix}LoginSection`).style.display = 'block';
+            document.getElementById(`${prefix}SetupSection`).classList.remove('show');
+            document.getElementById(`${prefix}ForgotSection`).classList.remove('show');
+            document.getElementById(`backToLogin${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.remove('show');
+        }
+
+        function setupFormHandlers() {
+            document.getElementById('clientLoginForm').addEventListener('submit', handleLogin.bind(null, 'client'));
+            document.getElementById('advisorLoginForm').addEventListener('submit', handleLogin.bind(null, 'advisor'));
+            document.getElementById('clientSetupForm').addEventListener('submit', handleSetup.bind(null, 'client'));
+            document.getElementById('advisorSetupForm').addEventListener('submit', handleSetup.bind(null, 'advisor'));
+            document.getElementById('clientForgotForm').addEventListener('submit', handleForgotPassword.bind(null, 'client'));
+            document.getElementById('advisorForgotForm').addEventListener('submit', handleForgotPassword.bind(null, 'advisor'));
+        }
+
+        function togglePassword(inputId) {
+            const inputMap = {
+                'client': 'clientPassword',
+                'advisor': 'advisorPassword',
+                'clientNew': 'clientNewPassword',
+                'clientConfirm': 'clientConfirmPassword',
+                'advisorNew': 'advisorNewPassword',
+                'advisorConfirm': 'advisorConfirmPassword'
+            };
+
+            const input = document.getElementById(inputMap[inputId]);
+            const icon = document.getElementById(`${inputId}PasswordIcon`);
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        }
+
+        function toggleSetup(show, tabName) {
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+            const setupSection = document.getElementById(`${prefix}SetupSection`);
+            const loginSection = document.getElementById(`${prefix}LoginSection`);
+            const backLink = document.getElementById(`backToLogin${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+
+            if (show) {
+                loginSection.style.display = 'none';
+                setupSection.classList.add('show');
+                backLink.classList.add('show');
+            } else {
+                loginSection.style.display = 'block';
+                setupSection.classList.remove('show');
+                backLink.classList.remove('show');
+            }
+        }
+
+        function toggleForgotPassword(show, tabName) {
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+            const forgotSection = document.getElementById(`${prefix}ForgotSection`);
+            const loginSection = document.getElementById(`${prefix}LoginSection`);
+            const backLink = document.getElementById(`backToLogin${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+
+            if (show) {
+                loginSection.style.display = 'none';
+                forgotSection.classList.add('show');
+                backLink.classList.add('show');
+            } else {
+                loginSection.style.display = 'block';
+                forgotSection.classList.remove('show');
+                backLink.classList.remove('show');
+            }
+        }
+
+        function handleLogin(tabName, event) {
+            event.preventDefault();
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+
+            const email = document.getElementById(`${prefix}Email`).value.trim();
+            const password = document.getElementById(`${prefix}Password`).value;
+            const rememberMe = document.getElementById(`${prefix}Remember`).checked;
+
+            if (!validateEmail(email)) {
+                showError(`${prefix}EmailError`, 'Please enter a valid email address');
+                return;
+            }
+
+            if (password.length < 3) {
+                showError(`${prefix}PasswordError`, 'Please enter your password');
+                return;
+            }
+
+            clearErrors(prefix);
+
+            const btn = document.getElementById(`${prefix}LoginBtn`);
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div>';
+
+            fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ email, password, role: prefix })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+
+                if (data.success) {
+                    sessionStorage.setItem('authToken', data.data?.token || 'session');
+                    sessionStorage.setItem('userRole', prefix);
+                    sessionStorage.setItem('userName', data.data?.name || '');
+
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedEmail', email);
+                    } else {
+                        localStorage.removeItem('rememberedEmail');
+                    }
+
+                    if (prefix === 'advisor') {
+                        window.location.href = '/advisor';
+                    } else {
+                        window.location.href = '/portal';
+                    }
+                } else {
+                    showError(`${prefix}PasswordError`, data.error || 'Login failed. Please check your credentials.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                showError(`${prefix}PasswordError`, 'Connection error. Please try again.');
+            });
+        }
+
+        function handleSetup(tabName, event) {
+            event.preventDefault();
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+
+            const newPassword = document.getElementById(`${prefix}NewPassword`).value;
+            const confirmPassword = document.getElementById(`${prefix}ConfirmPassword`).value;
+            const acceptTerms = document.getElementById(`${prefix}AcceptTerms`).checked;
+
+            if (newPassword.length < 8) {
+                showError(`${prefix}NewPasswordError`, 'Password must be at least 8 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showError(`${prefix}ConfirmPasswordError`, 'Passwords do not match');
+                return;
+            }
+
+            if (!acceptTerms) {
+                alert('You must accept the terms and conditions');
+                return;
+            }
+
+            clearErrors(prefix);
+            setTimeout(() => {
+                alert('Account created successfully! Please log in.');
+                toggleSetup(false, tabName);
+                document.getElementById(`${prefix}LoginForm`).reset();
+            }, 800);
+        }
+
+        function handleForgotPassword(tabName, event) {
+            event.preventDefault();
+            const prefix = tabName === 'client' ? 'client' : 'advisor';
+
+            const email = document.getElementById(`${prefix}ForgotEmail`).value.trim();
+
+            if (!validateEmail(email)) {
+                showError(`${prefix}ForgotEmailError`, 'Please enter a valid email address');
+                return;
+            }
+
+            clearErrors(prefix);
+            const btn = document.getElementById(`${prefix}ResetBtn`);
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div>';
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = 'Send Reset Link';
+
+                const successMsg = document.getElementById(`${prefix}ForgotSuccess`);
+                successMsg.classList.add('show');
+
+                document.getElementById(`${prefix}ForgotForm`).reset();
+
+                setTimeout(() => {
+                    toggleForgotPassword(false, tabName);
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }, 1200);
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+
+            const inputId = elementId.replace('Error', '');
+            const input = document.getElementById(inputId);
+            if (input) {
+                input.classList.add('error');
+            }
+        }
+
+        function clearErrors(prefix) {
+            document.querySelectorAll(`.tab-content[data-tab="${prefix === 'client' ? 'client' : 'advisor'}"] .error-message`).forEach(el => {
+                el.classList.remove('show');
+                el.textContent = '';
+            });
+            document.querySelectorAll(`.tab-content[data-tab="${prefix === 'client' ? 'client' : 'advisor'}"] input`).forEach(el => {
+                el.classList.remove('error');
+            });
+        }
+
+        function showSuccess(role) {
+            alert(`Login successful! Redirecting to ${role} portal...`);
+        }
+
+        function loadRememberedEmail() {
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                document.getElementById('clientEmail').value = rememberedEmail;
+                document.getElementById('clientRemember').checked = true;
+            }
+        }
+
+        document.addEventListener('blur', function(e) {
+            if (e.target.type === 'email' && e.target.value) {
+                if (!validateEmail(e.target.value)) {
+                    const prefix = e.target.id.split('Email')[0];
+                    showError(`${prefix}EmailError`, 'Invalid email address');
+                }
+            }
+        }, true);
+    </script>
+</body>
+</html>

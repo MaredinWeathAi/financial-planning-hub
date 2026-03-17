@@ -1,0 +1,15 @@
+{
+  "client_settings": {
+    "cli_de1d40cec7": {
+      "enabled": true,
+      "visible_sections": [
+        "accounts",
+        "transactions",
+        "reports"
+      ],
+      "can_download": true,
+      "can_export": false,
+      "updated_at": "2026-02-26T12:24:18.556293"
+    }
+  }
+}

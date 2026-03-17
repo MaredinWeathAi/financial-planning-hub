@@ -1,0 +1,37 @@
+{
+  "businesses": [
+    {
+      "id": "biz_test001",
+      "name": "Example Business LLC",
+      "ein": "12-3456789",
+      "entity_type": "llc",
+      "industry": "Services"
+    },
+    {
+      "id": "biz_e6fe41bdb8",
+      "name": "Acme Corp",
+      "ein": "12-3456789",
+      "entity_type": "s_corp",
+      "industry": "Technology",
+      "description": "",
+      "primary_contact_name": "John Doe",
+      "primary_contact_email": "john@acme.com",
+      "primary_contact_phone": "",
+      "address_line1": "",
+      "address_line2": "",
+      "city": "Miami",
+      "state": "FL",
+      "zip_code": "",
+      "country": "US",
+      "fiscal_year_end": "12-31",
+      "years_in_business": 0,
+      "number_of_employees": 0,
+      "annual_revenue": 0.0,
+      "active": true,
+      "notes": "",
+      "created_at": "2026-02-26T12:24:18.557917",
+      "updated_at": "2026-02-26T12:24:18.557917",
+      "tags": []
+    }
+  ]
+}

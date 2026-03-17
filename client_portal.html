@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - Maredin Wealth Advisors</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-dark: #0a0f1a;
+            --primary-blue: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gold: #b8964e;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --bg-light: #0a0f1a;
+            --bg-card: #111827;
+            --border-light: rgba(255,255,255,0.06);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-light);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #0d1321;
+            color: var(--text-primary);
+            padding: 2rem 0;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-main {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+
+        .logo-sub {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        .advisor-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .advisor-label {
+            opacity: 0.8;
+            margin-bottom: 0.375rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .advisor-name {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .advisor-title {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-left: 2px solid transparent;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255,255,255,0.04);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background-color: rgba(99,102,241,0.12);
+            color: var(--primary-blue);
+            border-left-color: #6366f1;
+        }
+
+        .nav-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            overflow-y: auto;
+            background-color: var(--bg-light);
+        }
+
+        .header {
+            background: var(--bg-card);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .header-title h1 {
+            font-size: 1.875rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background-color: rgba(255,255,255,0.04);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background-color: rgba(255,255,255,0.08);
+            color: var(--text-primary);
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 0 2rem 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Stat Card */
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .trend-arrow {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Welcome Section */
+        .welcome-card {
+            background: linear-gradient(135deg, #0d1321 0%, #1a2d4d 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: none;
+        }
+
+        .welcome-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0;
+        }
+
+        .welcome-text h2 {
+            font-size: 1.875rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .welcome-text p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: rgba(99,102,241,0.2);
+            color: #60a5fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .chart-container-sm {
+            position: relative;
+            height: 250px;
+            margin-bottom: 1rem;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #1a2235;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(99,102,241,0.04);
+        }
+
+        .positive {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .negative {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Activity Feed */
+        .activity-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: rgba(255,255,255,0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            flex-shrink: 0;
+            font-size: 1.25rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .activity-value {
+            text-align: right;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Progress Bar */
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-value {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), #60a5fa);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #5558e3;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255,255,255,0.04);
+            color: var(--text-primary);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255,255,255,0.08);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Input */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            background-color: #1a2235;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Message */
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .message.client {
+            background-color: rgba(99,102,241,0.08);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .message.advisor {
+            background-color: rgba(99,102,241,0.05);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .message-header {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Document Grid */
+        .document-item {
+            padding: 1rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .document-item:hover {
+            border-color: var(--primary-blue);
+            background-color: rgba(99,102,241,0.04);
+        }
+
+        .document-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex: 1;
+        }
+
+        .document-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: rgba(245,158,11,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f59e0b;
+            font-size: 1.25rem;
+        }
+
+        .document-details h4 {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .document-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Checklist */
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-custom input[type="checkbox"] {
+            display: none;
+        }
+
+        .checkbox-custom input[type="checkbox"]:checked + label {
+            display: none;
+        }
+
+        .checkbox-custom.checked {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .checklist-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .checklist-status {
+            font-size: 0.75rem;
+            color: var(--success);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* Account Cards */
+        .account-card {
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            transition: all 0.3s ease;
+        }
+
+        .account-card:hover {
+            border-color: var(--primary-blue);
+            box-shadow: var(--shadow-md);
+        }
+
+        .account-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .account-type {
+            display: inline-block;
+            background-color: rgba(255,255,255,0.04);
+            color: var(--text-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .account-balance {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .account-institution {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .account-performance {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .account-perf-item {
+            flex: 1;
+        }
+
+        .account-perf-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+        }
+
+        .account-perf-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Drag & Drop */
+        .dropzone {
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(99,102,241,0.03);
+        }
+
+        .dropzone:hover {
+            border-color: var(--primary-blue);
+            background-color: rgba(99,102,241,0.08);
+        }
+
+        .dropzone.dragover {
+            border-color: var(--primary-blue);
+            background-color: rgba(99,102,241,0.08);
+        }
+
+        .dropzone-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
+            color: var(--primary-blue);
+            font-size: 2rem;
+        }
+
+        .dropzone-text {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .dropzone-hint {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+
+            .main-content {
+                margin-left: 240px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 999;
+                transition: left 0.3s ease;
+                width: 280px;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+
+            .content {
+                padding: 0 1rem 1rem;
+            }
+
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .welcome-header {
+                flex-direction: column;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 1rem;
+                left: 0;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-box {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .performance-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .perf-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: var(--bg-card);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .perf-tab:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .perf-tab.active {
+            background-color: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        .holdings-row {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .holdings-row:last-child {
+            border-bottom: none;
+        }
+
+        .holding-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .holding-type {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .allocation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .allocation-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .allocation-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .allocation-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .allocation-value {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-main">Maredin</div>
+                    <div class="logo-sub">Wealth Advisors</div>
+                </div>
+                <div class="advisor-info">
+                    <div class="advisor-label">Your Advisor</div>
+                    <div class="advisor-name">Michael Chen, CFP</div>
+                    <div class="advisor-title">Premium Advisory</div>
+                </div>
+            </div>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <button class="nav-link active" data-page="dashboard">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 18 0A9 9 0 0 0 3 12Z"></path>
+                                <path d="M3.17 7.17A9 9 0 0 1 20.83 20.83"></path>
+                                <path d="M3 12h18"></path>
+                            </svg>
+                            <span>Dashboard</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-page="portfolio">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            <span>Portfolio</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-page="planning">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"></path>
+                                <path d="M9 10h.01"></path>
+                                <path d="M13 10h.01"></path>
+                                <path d="M17 10h.01"></path>
+                            </svg>
+                            <span>Financial Plan</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-page="accounts">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <span>Accounts</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-page="documents">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <span>Documents</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-page="messages">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span>Messages</span>
+                            <div class="nav-badge">3</div>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-title">
+                    <h1 id="pageTitle">Dashboard</h1>
+                    <p class="header-subtitle" id="pageSubtitle">Welcome to your wealth management portal</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="btn-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="1"></circle>
+                            <circle cx="12" cy="5" r="1"></circle>
+                            <circle cx="12" cy="19" r="1"></circle>
+                        </svg>
+                    </button>
+                    <div class="profile-avatar">SJ</div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+
+                <!-- Dashboard Page -->
+                <div class="page active" id="dashboard">
+                    <!-- Welcome Section -->
+                    <div class="welcome-card">
+                        <div class="welcome-header">
+                            <div class="welcome-text">
+                                <h2>Welcome back, John & Sarah</h2>
+                                <p>Last review: March 15, 2024 • Next review: June 15, 2024</p>
+                                <div>
+                                    <span class="badge">Portfolio on track</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Net Worth Summary -->
+                    <div class="grid-2">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Net Worth</div>
+                            <div class="stat-value">$4,750,000</div>
+                            <div class="stat-change positive">
+                                <svg class="trend-arrow" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7 14l5-5 5 5z"></path>
+                                </svg>
+                                +$325,000 (7.3%) YTD
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-label">Asset Allocation</div>
+                            <div style="position: relative; height: 120px;">
+                                <canvas id="netWorthChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Section -->
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Portfolio Performance</h3>
+                            <div class="performance-tabs">
+                                <button class="perf-tab active" data-period="1m">1M</button>
+                                <button class="perf-tab" data-period="3m">3M</button>
+                                <button class="perf-tab" data-period="ytd">YTD</button>
+                                <button class="perf-tab" data-period="1y">1Y</button>
+                                <button class="perf-tab" data-period="3y">3Y</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <h3 class="section-title">Quick Stats</h3>
+                    <div class="metric-row">
+                        <div class="metric-box">
+                            <div class="metric-label">Total Assets</div>
+                            <div class="metric-value">$5,250,000</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Total Liabilities</div>
+                            <div class="metric-value">$500,000</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">YTD Return</div>
+                            <div class="metric-value" style="color: var(--success);">+7.3%</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-label">Cash Available</div>
+                            <div class="metric-value">$325,000</div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <h3 class="section-title">Recent Activity</h3>
+                    <div class="card">
+                        <div class="activity-item">
+                            <div class="activity-icon">📈</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Dividend Received</div>
+                                <div class="activity-description">Microsoft Corp - MSFT</div>
+                                <div class="activity-time">2 days ago</div>
+                            </div>
+                            <div class="activity-value">+$1,250</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">💰</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Contribution</div>
+                                <div class="activity-description">401(k) monthly contribution</div>
+                                <div class="activity-time">5 days ago</div>
+                            </div>
+                            <div class="activity-value">-$3,500</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🔄</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Rebalancing</div>
+                                <div class="activity-description">Portfolio adjusted for Q1</div>
+                                <div class="activity-time">1 week ago</div>
+                            </div>
+                            <div class="activity-value">—</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">📊</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Tax Loss Harvested</div>
+                                <div class="activity-description">Realized losses for tax purposes</div>
+                                <div class="activity-time">10 days ago</div>
+                            </div>
+                            <div class="activity-value">-$5,000</div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Plan Review Completed</div>
+                                <div class="activity-description">Annual financial planning review</div>
+                                <div class="activity-time">2 weeks ago</div>
+                            </div>
+                            <div class="activity-value">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Page -->
+                <div class="page" id="portfolio">
+                    <h3 class="section-title">Holdings Summary</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Asset Name</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Value</th>
+                                    <th>% Portfolio</th>
+                                    <th>Gain/Loss</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Vanguard Total Stock Market</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">VTSAX</span></td>
+                                    <td>Stock Index</td>
+                                    <td>15,500</td>
+                                    <td>$238.50</td>
+                                    <td><strong>$1,596,750</strong></td>
+                                    <td>30.4%</td>
+                                    <td class="positive">+$175,400</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vanguard Total Int'l Stock</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">VTIAX</span></td>
+                                    <td>Stock Index</td>
+                                    <td>8,200</td>
+                                    <td>$110.25</td>
+                                    <td><strong>$903,450</strong></td>
+                                    <td>17.2%</td>
+                                    <td class="positive">+$98,200</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vanguard Total Bond Market</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">VBTLX</span></td>
+                                    <td>Bond Index</td>
+                                    <td>12,000</td>
+                                    <td>$82.30</td>
+                                    <td><strong>$987,600</strong></td>
+                                    <td>18.8%</td>
+                                    <td class="positive">+$42,100</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>iShares Core Real Estate ETF</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">IGSIX</span></td>
+                                    <td>Real Estate</td>
+                                    <td>4,500</td>
+                                    <td>$225.60</td>
+                                    <td><strong>$1,015,200</strong></td>
+                                    <td>19.3%</td>
+                                    <td class="positive">+$125,750</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vanguard Precious Metals</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">VGPMX</span></td>
+                                    <td>Commodities</td>
+                                    <td>2,100</td>
+                                    <td>$68.75</td>
+                                    <td><strong>$144,375</strong></td>
+                                    <td>2.7%</td>
+                                    <td class="negative">-$8,900</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cash & Cash Equivalents</strong><br><span style="color: var(--text-secondary); font-size: 0.875rem;">VMFXX</span></td>
+                                    <td>Money Market</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td><strong>$325,000</strong></td>
+                                    <td>6.2%</td>
+                                    <td>$0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="section-title">Asset Allocation</h3>
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">By Asset Class</h3>
+                            </div>
+                            <div class="chart-container-sm">
+                                <canvas id="allocationChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">By Sector</h3>
+                            </div>
+                            <div class="chart-container-sm">
+                                <canvas id="sectorChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Account Summary</h3>
+                    <div class="allocation-grid">
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">IRA</span>
+                            </div>
+                            <div class="account-balance">$850,000</div>
+                            <div class="account-institution">Fidelity Investments</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+6.8%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$56,700</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">401(k)</span>
+                            </div>
+                            <div class="account-balance">$1,250,000</div>
+                            <div class="account-institution">Vanguard</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+7.2%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$90,000</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">Roth IRA</span>
+                            </div>
+                            <div class="account-balance">$575,000</div>
+                            <div class="account-institution">Charles Schwab</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+7.5%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$43,125</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">Taxable</span>
+                            </div>
+                            <div class="account-balance">$1,575,000</div>
+                            <div class="account-institution">Fidelity Investments</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+7.1%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$111,825</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">HSA</span>
+                            </div>
+                            <div class="account-balance">$125,000</div>
+                            <div class="account-institution">HealthEquity</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+6.5%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$8,125</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="account-card">
+                            <div class="account-header">
+                                <span class="account-type">529 Plan</span>
+                            </div>
+                            <div class="account-balance">$375,000</div>
+                            <div class="account-institution">Vanguard 529</div>
+                            <div class="account-performance">
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">YTD Return</div>
+                                    <div class="account-perf-value" style="color: var(--success);">+6.9%</div>
+                                </div>
+                                <div class="account-perf-item">
+                                    <div class="account-perf-label">Gain</div>
+                                    <div class="account-perf-value">+$25,875</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Planning Page -->
+                <div class="page" id="planning">
+                    <h3 class="section-title">Financial Goals</h3>
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span class="progress-title">Retirement (Target: Age 65)</span>
+                                <span class="progress-value">$4.2M / $6.0M</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%;"></div>
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                13 years to goal • Currently on track with monthly savings
+                            </div>
+                        </div>
+
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span class="progress-title">Children's Education Fund</span>
+                                <span class="progress-value">$375,000 / $500,000</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%;"></div>
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                529 College Savings Plans • 8 years until college
+                            </div>
+                        </div>
+
+                        <div class="progress-item">
+                            <div class="progress-label">
+                                <span class="progress-title">Home Renovation Reserve</span>
+                                <span class="progress-value">$85,000 / $150,000</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 57%;"></div>
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.5rem;">
+                                Target completion: 2026
+                            </div>
+                        </div>
+
+                        <div class="progress-item" style="margin-bottom: 0;">
+                            <div class="progress-label">
+                                <span class="progress-title">Charitable Giving Fund</span>
+                                <span class="progress-value">$250,000 / $250,000</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div style="font-size: 0.875rem; color: var(--success); margin-top: 0.5rem;">
+                                ✓ Target achieved
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Retirement Projection</h3>
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Monte Carlo Retirement Analysis</h3>
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">Based on 10,000 market simulations</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="retirementChart"></canvas>
+                        </div>
+                        <div style="background-color: #1a2235; padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                <div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 600;">Success Rate</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">94%</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 600;">Projected at 65</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">$8.2M</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 600;">Annual Income</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-blue);">$328K</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Cash Flow Analysis</h3>
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Income vs Expenses</h3>
+                            </div>
+                            <div class="chart-container-sm">
+                                <canvas id="cashflowChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Summary</h3>
+                            </div>
+                            <div style="padding: 1rem 0;">
+                                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <span style="color: var(--text-secondary);">Annual Gross Income</span>
+                                    <strong style="color: var(--text-primary);">$425,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <span style="color: var(--text-secondary);">Annual Expenses</span>
+                                    <strong style="color: var(--text-primary);">$165,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <span style="color: var(--text-secondary);">Annual Savings</span>
+                                    <strong style="color: var(--success);">$260,000</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.75rem 0;">
+                                    <span style="color: var(--text-secondary);">Savings Rate</span>
+                                    <strong style="color: var(--primary-blue);">61.2%</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Insurance Overview</h3>
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="activity-item">
+                            <div class="activity-icon">🛡️</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Life Insurance</div>
+                                <div class="activity-description">Term Life - $2,000,000 coverage</div>
+                                <div class="activity-time">Expires: Dec 2034</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Annual Premium</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">$1,200</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">🏥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Disability Insurance</div>
+                                <div class="activity-description">Long-term disability - 60% income replacement</div>
+                                <div class="activity-time">Approved: Apr 2022</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Annual Premium</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">$1,850</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">🏡</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Homeowners Insurance</div>
+                                <div class="activity-description">Full coverage on primary residence</div>
+                                <div class="activity-time">Renews: Aug 2024</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Annual Premium</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">$2,400</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">🚗</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Auto Insurance</div>
+                                <div class="activity-description">Both vehicles - comprehensive coverage</div>
+                                <div class="activity-time">Renews: May 2024</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Annual Premium</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">$1,680</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Estate Planning Checklist</h3>
+                    <div class="card">
+                        <div class="checklist-item">
+                            <div class="checkbox-custom checked">
+                                <input type="checkbox" id="check1" checked>
+                                <label for="check1"></label>
+                                ✓
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Last Will & Testament</div>
+                                <div class="checklist-description">Executed and notarized</div>
+                                <div class="checklist-status">✓ Completed - Apr 2022</div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-custom checked">
+                                <input type="checkbox" id="check2" checked>
+                                <label for="check2"></label>
+                                ✓
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Revocable Living Trust</div>
+                                <div class="checklist-description">Avoids probate and provides privacy</div>
+                                <div class="checklist-status">✓ Completed - Apr 2022</div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-custom checked">
+                                <input type="checkbox" id="check3" checked>
+                                <label for="check3"></label>
+                                ✓
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Healthcare Power of Attorney</div>
+                                <div class="checklist-description">Designates medical decision maker</div>
+                                <div class="checklist-status">✓ Completed - Apr 2022</div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-custom checked">
+                                <input type="checkbox" id="check4" checked>
+                                <label for="check4"></label>
+                                ✓
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Financial Power of Attorney</div>
+                                <div class="checklist-description">Designates financial decision maker</div>
+                                <div class="checklist-status">✓ Completed - Apr 2022</div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-custom checked">
+                                <input type="checkbox" id="check5" checked>
+                                <label for="check5"></label>
+                                ✓
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Beneficiary Designations Updated</div>
+                                <div class="checklist-description">Insurance, IRAs, and retirement accounts</div>
+                                <div class="checklist-status">✓ Completed - Feb 2024</div>
+                            </div>
+                        </div>
+
+                        <div class="checklist-item">
+                            <div class="checkbox-custom">
+                                <input type="checkbox" id="check6">
+                                <label for="check6"></label>
+                            </div>
+                            <div class="checklist-content">
+                                <div class="checklist-title">Annual Net Worth Review</div>
+                                <div class="checklist-description">Review and update all assets and liabilities</div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.5rem;">Recommended for discussion</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Page -->
+                <div class="page" id="accounts">
+                    <h3 class="section-title">All Accounts</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Account Name</th>
+                                    <th>Institution</th>
+                                    <th>Type</th>
+                                    <th>Balance</th>
+                                    <th>YTD Return</th>
+                                    <th>Last Updated</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>John's Traditional IRA</strong></td>
+                                    <td>Fidelity Investments</td>
+                                    <td>IRA</td>
+                                    <td><strong>$425,000</strong></td>
+                                    <td class="positive">+6.8%</td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sarah's Traditional IRA</strong></td>
+                                    <td>Fidelity Investments</td>
+                                    <td>IRA</td>
+                                    <td><strong>$425,000</strong></td>
+                                    <td class="positive">+6.8%</td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Joint 401(k) Plan</strong></td>
+                                    <td>Vanguard</td>
+                                    <td>401(k)</td>
+                                    <td><strong>$1,250,000</strong></td>
+                                    <td class="positive">+7.2%</td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Roth IRA - John</strong></td>
+                                    <td>Charles Schwab</td>
+                                    <td>Roth IRA</td>
+                                    <td><strong>$575,000</strong></td>
+                                    <td class="positive">+7.5%</td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Taxable Brokerage Account</strong></td>
+                                    <td>Fidelity Investments</td>
+                                    <td>Taxable</td>
+                                    <td><strong>$1,575,000</strong></td>
+                                    <td class="positive">+7.1%</td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Health Savings Account</strong></td>
+                                    <td>HealthEquity</td>
+                                    <td>HSA</td>
+                                    <td><strong>$125,000</strong></td>
+                                    <td class="positive">+6.5%</td>
+                                    <td>Yesterday</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>College Savings 529 Plan</strong></td>
+                                    <td>Vanguard 529</td>
+                                    <td>529 Plan</td>
+                                    <td><strong>$375,000</strong></td>
+                                    <td class="positive">+6.9%</td>
+                                    <td>Yesterday</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Documents Page -->
+                <div class="page" id="documents">
+                    <h3 class="section-title">Document Vault</h3>
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <h3 class="card-title">Upload Documents</h3>
+                        </div>
+                        <div class="dropzone" id="dropzone">
+                            <div class="dropzone-icon">📁</div>
+                            <div class="dropzone-text">Drag and drop files here</div>
+                            <div class="dropzone-hint">or click to browse • Supports PDF, DOC, XLS</div>
+                            <input type="file" id="fileInput" style="display: none;" multiple>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">Recent Documents</h3>
+                    <div class="card">
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">📄</div>
+                                <div class="document-details">
+                                    <h4>2024 Tax Summary</h4>
+                                    <div class="document-date">Uploaded: Mar 10, 2024 • 2.4 MB</div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-secondary btn-small">Download</button>
+                            </div>
+                        </div>
+
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">📊</div>
+                                <div class="document-details">
+                                    <h4>Q4 2023 Performance Report</h4>
+                                    <div class="document-date">Uploaded: Jan 15, 2024 • 1.8 MB</div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-secondary btn-small">Download</button>
+                            </div>
+                        </div>
+
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">📋</div>
+                                <div class="document-details">
+                                    <h4>Annual Planning Summary 2024</h4>
+                                    <div class="document-date">Uploaded: Dec 20, 2023 • 3.1 MB</div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-secondary btn-small">Download</button>
+                            </div>
+                        </div>
+
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">📄</div>
+                                <div class="document-details">
+                                    <h4>Estate Planning Documents</h4>
+                                    <div class="document-date">Uploaded: Apr 15, 2023 • 4.7 MB</div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-secondary btn-small">Download</button>
+                            </div>
+                        </div>
+
+                        <div class="document-item">
+                            <div class="document-info">
+                                <div class="document-icon">📊</div>
+                                <div class="document-details">
+                                    <h4>Investment Policy Statement</h4>
+                                    <div class="document-date">Uploaded: Jan 8, 2023 • 2.2 MB</div>
+                                </div>
+                            </div>
+                            <div class="document-actions">
+                                <button class="btn btn-secondary btn-small">Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Page -->
+                <div class="page" id="messages">
+                    <h3 class="section-title">Messages</h3>
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Conversations</h3>
+                            </div>
+                            <div class="activity-item" onclick="selectConversation(this, 0)" style="cursor: pointer; background-color: rgba(99,102,241,0.12);">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">MC</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Michael Chen</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Your advisor</div>
+                                </div>
+                                <div class="nav-badge">1</div>
+                            </div>
+                            <div class="activity-item" onclick="selectConversation(this, 1)" style="cursor: pointer;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">JS</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Jane Smith</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Associate Advisor</div>
+                                </div>
+                            </div>
+                            <div class="activity-item" onclick="selectConversation(this, 2)" style="cursor: pointer;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #60a5fa); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; flex-shrink: 0;">SW</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Sarah Williams</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">Portfolio Manager</div>
+                                </div>
+                                <div class="nav-badge">2</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Conversation</h3>
+                            </div>
+                            <div style="padding: 1rem 0;">
+                                <div class="message client">
+                                    <div>
+                                        <div class="message-header">You</div>
+                                        <div style="color: var(--text-primary);">Hi Michael, I wanted to discuss our Q2 rebalancing strategy and the recent market volatility.</div>
+                                        <div class="message-time">2 hours ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="message advisor">
+                                    <div>
+                                        <div class="message-header">Michael Chen</div>
+                                        <div style="color: var(--text-primary);">Great question! The market has shown some interesting patterns. Given your long time horizon, I think we should maintain our current allocation. Let's discuss this further at our next quarterly review.</div>
+                                        <div class="message-time">1 hour ago</div>
+                                    </div>
+                                </div>
+
+                                <div class="message advisor">
+                                    <div>
+                                        <div class="message-header">Michael Chen</div>
+                                        <div style="color: var(--text-primary);">I'm attaching the updated portfolio analysis. Please review when you get a chance and let me know if you have any questions.</div>
+                                        <div class="message-time">1 hour ago</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06);">
+                                <input type="text" placeholder="Type a message..." style="flex: 1;">
+                                <button class="btn btn-primary">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // API Integration Helper
+        const API_BASE = window.location.origin;
+        let currentUser = null;
+        let portalSettings = null;
+
+        async function apiGet(path) {
+            try {
+                const res = await fetch(API_BASE + path, {credentials: 'include'});
+                if (!res.ok) throw new Error(res.statusText);
+                return await res.json();
+            } catch(e) {
+                console.warn('API call failed:', path, e);
+                return null;
+            }
+        }
+
+        async function initPortal() {
+            // Check auth
+            const auth = await apiGet('/api/auth/me');
+            if (!auth || !auth.success) {
+                // Allow demo mode - don't redirect, just use hardcoded data
+                console.log('Running in demo mode');
+                return;
+            }
+            currentUser = auth.data;
+
+            // Load portal settings
+            const settings = await apiGet('/api/portal/settings/' + currentUser.client_id);
+            if (settings && settings.success) {
+                portalSettings = settings.data;
+                applyPortalSettings();
+            }
+        }
+
+        function applyPortalSettings() {
+            if (!portalSettings) return;
+            // Hide sections based on advisor settings
+            const sectionMap = {
+                'dashboard': '[data-page="dashboard"]',
+                'portfolio': '[data-page="portfolio"]',
+                'planning': '[data-page="planning"]',
+                'accounts': '[data-page="accounts"]',
+                'documents': '[data-page="documents"]',
+                'messages': '[data-page="messages"]'
+            };
+
+            for (const [key, selector] of Object.entries(sectionMap)) {
+                if (portalSettings.sections && portalSettings.sections[key] === false) {
+                    const el = document.querySelector(selector);
+                    if (el) el.style.display = 'none';
+                    // Also hide nav item
+                    const navItem = document.querySelector(`[data-page="${key}"]`);
+                    if (navItem) navItem.style.display = 'none';
+                }
+            }
+        }
+
+        // Chart configuration
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 12;
+
+        // Color palette
+        const colors = {
+            primary: '#6366f1',
+            success: '#10b981',
+            danger: '#ef4444',
+            warning: '#f59e0b',
+            purple: '#8b5cf6',
+            pink: '#ec4899',
+            border: 'rgba(255,255,255,0.06)',
+            textSecondary: '#94a3b8'
+        };
+
+        // Net Worth Donut Chart
+        const netWorthCtx = document.getElementById('netWorthChart');
+        if (netWorthCtx) {
+            new Chart(netWorthCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Stocks', 'Bonds', 'Real Estate', 'Cash'],
+                    datasets: [{
+                        data: [30, 20, 25, 25],
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b', 'rgba(255,255,255,0.1)'],
+                        borderColor: '#111827',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 11, weight: '500' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Performance Line Chart
+        const performanceCtx = document.getElementById('performanceChart');
+        if (performanceCtx) {
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [4420000, 4380000, 4450000, 4520000, 4600000, 4750000, 4780000, 4820000, 4900000, 4950000, 5050000, 5100000],
+                        borderColor: colors.primary,
+                        backgroundColor: 'rgba(99,102,241,0.08)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 3,
+                        pointBackgroundColor: colors.primary,
+                        pointBorderColor: '#111827',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { padding: 15, font: { size: 11, weight: '500' } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: { callback: (value) => '$' + (value / 1000000).toFixed(1) + 'M' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Asset Allocation Pie Chart
+        const allocationCtx = document.getElementById('allocationChart');
+        if (allocationCtx) {
+            new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['U.S. Stocks', 'Int\'l Stocks', 'Bonds', 'Real Estate', 'Commodities', 'Cash'],
+                    datasets: [{
+                        data: [31, 17, 19, 19, 3, 6],
+                        backgroundColor: ['#6366f1', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', 'rgba(255,255,255,0.1)'],
+                        borderColor: '#111827',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 10, font: { size: 10, weight: '500' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Sector Chart
+        const sectorCtx = document.getElementById('sectorChart');
+        if (sectorCtx) {
+            new Chart(sectorCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Technology', 'Healthcare', 'Financials', 'Industrials', 'Consumer', 'Other'],
+                    datasets: [{
+                        data: [28, 15, 14, 12, 18, 13],
+                        backgroundColor: ['#6366f1', colors.success, colors.warning, '#f59e0b', colors.purple, 'rgba(255,255,255,0.08)'],
+                        borderColor: '#111827',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 10, font: { size: 10, weight: '500' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Retirement Chart (Fan Chart effect)
+        const retirementCtx = document.getElementById('retirementChart');
+        if (retirementCtx) {
+            new Chart(retirementCtx, {
+                type: 'line',
+                data: {
+                    labels: ['55', '56', '57', '58', '59', '60', '61', '62', '63', '64', '65', '70', '75', '80', '85', '90'],
+                    datasets: [
+                        {
+                            label: '90th Percentile',
+                            data: [4750, 5050, 5380, 5750, 6160, 6620, 7130, 7700, 8340, 9060, 9880, 12500, 15800, 19900, 25000, 31500],
+                            borderColor: 'rgba(99,102,241,0.3)',
+                            backgroundColor: 'rgba(99,102,241,0.08)',
+                            fill: true,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Median (50th)',
+                            data: [4750, 5000, 5280, 5600, 5960, 6370, 6830, 7350, 7940, 8610, 9380, 11300, 13600, 16400, 19700, 23600],
+                            borderColor: colors.primary,
+                            backgroundColor: 'rgba(99,102,241,0.15)',
+                            fill: true,
+                            pointRadius: 2,
+                            pointBackgroundColor: colors.primary,
+                            tension: 0.4
+                        },
+                        {
+                            label: '10th Percentile',
+                            data: [4750, 4900, 5050, 5200, 5350, 5500, 5650, 5800, 5950, 6100, 6250, 6800, 7300, 7800, 8300, 8800],
+                            borderColor: 'rgba(99,102,241,0.3)',
+                            backgroundColor: 'rgba(99,102,241,0.08)',
+                            fill: false,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: { padding: 15, font: { size: 11, weight: '500' } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: { callback: (value) => '$' + (value / 1000).toFixed(0) + 'K' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Cash Flow Chart
+        const cashflowCtx = document.getElementById('cashflowChart');
+        if (cashflowCtx) {
+            new Chart(cashflowCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gross Income', 'Taxes', 'Living Expenses', 'Annual Savings'],
+                    datasets: [{
+                        label: 'Amount',
+                        data: [425000, 95000, 165000, 260000],
+                        backgroundColor: [colors.success, colors.danger, colors.warning, colors.primary],
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { callback: (value) => '$' + (value / 1000).toFixed(0) + 'K' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Navigation functionality
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+
+                // Update active nav
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                // Update active page
+                pages.forEach(p => p.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+
+                // Update header
+                const titles = {
+                    'dashboard': 'Dashboard',
+                    'portfolio': 'Portfolio Overview',
+                    'planning': 'Financial Planning',
+                    'accounts': 'Accounts',
+                    'documents': 'Document Vault',
+                    'messages': 'Messages'
+                };
+
+                document.getElementById('pageTitle').textContent = titles[pageId] || 'Dashboard';
+                document.getElementById('pageSubtitle').textContent = 'Manage your wealth and financial goals';
+            });
+        });
+
+        // Document upload
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        if (dropzone) {
+            dropzone.addEventListener('click', () => fileInput.click());
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('dragover');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                console.log('Files dropped:', e.dataTransfer.files);
+                alert('Files uploaded successfully!');
+            });
+        }
+
+        // Message conversation selection
+        function selectConversation(element, index) {
+            const conversations = document.querySelectorAll('[onclick*="selectConversation"]');
+            conversations.forEach(conv => conv.style.backgroundColor = 'transparent');
+            element.style.backgroundColor = 'rgba(99,102,241,0.12)';
+        }
+
+        // Initialize tooltips and interactions
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Portal loaded successfully');
+            // Initialize API integration
+            initPortal();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+{
+  "clients": [
+    {
+      "id": "cli_f322f93e5c",
+      "name": "John Smith",
+      "company": "Smith Family Trust",
+      "email": "john@smithfamily.com",
+      "cc_emails": [],
+      "phone": "",
+      "address_line1": "123 Main Street",
+      "address_line2": "",
+      "city": "Miami",
+      "state": "FL",
+      "zip_code": "33101",
+      "country": "US",
+      "fee_schedule": {
+        "name": "Wealth Management \u2014 Flat",
+        "items": [
+          {
+            "name": "Monthly Management Fee",
+            "description": "Portfolio management and advisory services",
+            "fee_type": "flat",
+            "rate": 2500.0,
+            "quantity": 1.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          },
+          {
+            "name": "Trading & Execution",
+            "description": "Trade execution and rebalancing",
+            "fee_type": "flat",
+            "rate": 250.0,
+            "quantity": 1.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          }
+        ],
+        "notes": ""
+      },
+      "billing_day": 1,
+      "payment_terms": 30,
+      "currency": "USD",
+      "tax_rate": 0.0,
+      "tax_id": "",
+      "accounts": {
+        "ibkr": "U9876543",
+        "schwab": "****4321"
+      },
+      "active": true,
+      "notes": "",
+      "created_at": "2026-02-26T12:24:05.906041",
+      "tags": [
+        "wealth-management"
+      ]
+    },
+    {
+      "id": "cli_a0cd5c43b9",
+      "name": "Sarah Johnson",
+      "company": "Johnson Holdings LLC",
+      "email": "sarah@johnsonholdings.com",
+      "cc_emails": [
+        "accounting@johnsonholdings.com"
+      ],
+      "phone": "",
+      "address_line1": "456 Oak Avenue",
+      "address_line2": "Suite 200",
+      "city": "Fort Lauderdale",
+      "state": "FL",
+      "zip_code": "33301",
+      "country": "US",
+      "fee_schedule": {
+        "name": "AUM-Based",
+        "items": [
+          {
+            "name": "Investment Management Fee",
+            "description": "Annual rate of 1.00% on assets under management, billed monthly",
+            "fee_type": "percent_aum",
+            "rate": 1.0,
+            "quantity": 1.0,
+            "minimum": 500.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          },
+          {
+            "name": "Custodian Fee Pass-Through",
+            "description": "IBKR account maintenance",
+            "fee_type": "flat",
+            "rate": 10.0,
+            "quantity": 1.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          }
+        ],
+        "notes": ""
+      },
+      "billing_day": 1,
+      "payment_terms": 15,
+      "currency": "USD",
+      "tax_rate": 0.0,
+      "tax_id": "",
+      "accounts": {
+        "ibkr": "U1111111",
+        "bofa": "****9999"
+      },
+      "active": true,
+      "notes": "",
+      "created_at": "2026-02-26T12:24:05.906621",
+      "tags": [
+        "aum-fee",
+        "institutional"
+      ]
+    },
+    {
+      "id": "cli_de1d40cec7",
+      "name": "Michael Chen",
+      "company": "Chen Capital Partners",
+      "email": "mike@chencapital.com",
+      "cc_emails": [],
+      "phone": "",
+      "address_line1": "789 Biscayne Blvd",
+      "address_line2": "",
+      "city": "Miami",
+      "state": "FL",
+      "zip_code": "33132",
+      "country": "US",
+      "fee_schedule": {
+        "name": "2 and 20",
+        "items": [
+          {
+            "name": "Management Fee",
+            "description": "Annual management fee of 2% on AUM, billed monthly",
+            "fee_type": "percent_aum",
+            "rate": 2.0,
+            "quantity": 1.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          },
+          {
+            "name": "Performance Fee",
+            "description": "20% of net new profits above high-water mark",
+            "fee_type": "percent_pnl",
+            "rate": 20.0,
+            "quantity": 1.0,
+            "minimum": 0.0,
+            "maximum": 0.0,
+            "taxable": false,
+            "active": true
+          }
+        ],
+        "notes": ""
+      },
+      "billing_day": 1,
+      "payment_terms": 30,
+      "currency": "USD",
+      "tax_rate": 0.0,
+      "tax_id": "",
+      "accounts": {
+        "ibkr": "U2222222",
+        "schwab": "****7777"
+      },
+      "active": true,
+      "notes": "",
+      "created_at": "2026-02-26T12:24:05.906661",
+      "tags": [
+        "performance-fee",
+        "hedge"
+      ]
+    }
+  ]
+}

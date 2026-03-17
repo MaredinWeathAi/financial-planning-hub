@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+*.db
+.DS_Store
+*.numbers
+data/uploads/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+advisor_portal_backup.html
+advisor_portal_new.html
+.claude/
+*.pdf
+Client PDF Reports MGP/
+Sergio and Maria Financial Summary.numbers
+biz-models/

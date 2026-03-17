@@ -1,0 +1,13 @@
+{
+  "users": [
+    {
+      "id": "usr_admin",
+      "email": "admin@mgp.com",
+      "password_hash": "scrypt:32768:8:1$tWrLkw7lZfsCg0nZ$761953aa1ee54f239d3fa3b949a602a27054a77629d24a9ca569272351b6956cf4d8234b5499b7473c1bd9fd7fb0f85f928ca3265f51cb99aa2cd8e1fd805a55",
+      "role": "advisor",
+      "name": "Administrator",
+      "active": true,
+      "created_at": "2026-02-26T12:24:05.848677"
+    }
+  ]
+}
