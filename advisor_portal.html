@@ -887,6 +887,10 @@
         }
 
         /* ==================== ANIMATIONS ==================== */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1582,31 +1586,33 @@
                 <!-- PAGE: Businesses -->
                 <div id="page-businesses" class="page">
                     <div class="flex-between mb-4">
-                        <h2 style="font-size: 20px; font-weight: 600;">Manage Businesses</h2>
-                        <button class="btn btn-primary" onclick="openModal('create-business-modal')">
+                        <h2 style="font-size: 20px; font-weight: 600;">Business Clients</h2>
+                        <button class="btn btn-primary" onclick="window.open(PLANNING_APP_URL+'/business','_blank')">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="12" y1="5" x2="12" y2="19"></line>
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                             </svg>
-                            New Business
+                            Add Business
                         </button>
                     </div>
+                    <p style="color:#94a3b8; font-size:13px; margin-bottom:16px;">Live data from the planning app. Click <strong style="color:#e2e8f0;">Open</strong> to enter a business's full plan, or <strong style="color:#e2e8f0;">Add Business</strong> to create a new one.</p>
                     <div class="card">
                         <div class="table-container">
                             <table class="table" id="businessesTable">
                                 <thead>
                                     <tr>
-                                        <th>Business Name</th>
-                                        <th>EIN</th>
+                                        <th>Firm Name</th>
                                         <th>Entity Type</th>
-                                        <th>Industry</th>
-                                        <th>Status</th>
+                                        <th>Revenue</th>
+                                        <th>Employees</th>
+                                        <th>Primary Contact</th>
+                                        <th>Work Optional</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="businessesTableBody">
                                     <tr>
-                                        <td colspan="6" class="text-center" style="padding: 40px;">Loading businesses...</td>
+                                        <td colspan="7" class="text-center" style="padding: 40px;">Loading businesses...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1803,18 +1809,97 @@
 
                 <!-- PAGE: Dashboard -->
                 <div id="page-dashboard" class="page">
-                    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 24px;">Dashboard</h2>
-                    <div class="grid grid-cols-4" id="dashboardStats"></div>
-                    <div class="grid grid-cols-2">
-                        <div class="card">
-                            <h3 class="card-title">AUM Over Time</h3>
-                            <canvas id="aumChart" style="max-height: 300px;"></canvas>
-                        </div>
-                        <div class="card">
-                            <h3 class="card-title">Revenue by Client Type</h3>
-                            <canvas id="revenueChart" style="max-height: 300px;"></canvas>
-                        </div>
+                    <div class="flex-between mb-4">
+                        <h2 style="font-size: 20px; font-weight: 600;">Analytics Dashboard</h2>
+                        <button class="btn btn-secondary" onclick="loadDashboard()" style="font-size:13px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+                                <polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            Refresh
+                        </button>
                     </div>
+
+                    <!-- Loading state -->
+                    <div id="dashboard-loading" style="text-align:center; padding:80px 0; color:#94a3b8;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:40px;height:40px;margin:0 auto 16px;display:block;animation:spin 1s linear infinite;">
+                            <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                        </svg>
+                        <p>Loading data from both systems...</p>
+                    </div>
+
+                    <!-- Dashboard content -->
+                    <div id="dashboard-content" style="display:none;">
+
+                        <!-- ── PRACTICE KPI CARDS ── -->
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;" id="dash-kpi-row"></div>
+
+                        <!-- ── ROW: AUM by Client + Plan Success ── -->
+                        <div class="grid grid-cols-2">
+                            <div class="card">
+                                <h3 class="card-title">AUM by Household</h3>
+                                <canvas id="aumByClientChart" style="max-height:360px;"></canvas>
+                            </div>
+                            <div class="card" style="overflow:auto;">
+                                <h3 class="card-title">Plan Success by Client</h3>
+                                <div id="successRatesContent" style="max-height:360px;overflow-y:auto;"></div>
+                            </div>
+                        </div>
+
+                        <!-- ── ROW: Goals Breakdown + Assets vs Liabilities ── -->
+                        <div class="grid grid-cols-2">
+                            <div class="card">
+                                <h3 class="card-title">Goals by Priority</h3>
+                                <canvas id="goalsDonutChart" style="max-height:280px;"></canvas>
+                                <div id="goalsLegend" style="margin-top:12px;"></div>
+                            </div>
+                            <div class="card">
+                                <h3 class="card-title">Assets vs. Liabilities</h3>
+                                <canvas id="assetsLiabChart" style="max-height:280px;"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- ── BUSINESS SECTION ── -->
+                        <div class="card">
+                            <h3 class="card-title" style="margin-bottom:16px;">Business Clients</h3>
+                            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="biz-kpi-row"></div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                                <div>
+                                    <canvas id="bizRevenueChart" style="max-height:220px;"></canvas>
+                                </div>
+                                <div>
+                                    <canvas id="bizEntityChart" style="max-height:220px;"></canvas>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Firm</th>
+                                            <th>Entity</th>
+                                            <th>Revenue</th>
+                                            <th>Profit</th>
+                                            <th>Owners</th>
+                                            <th>Employees</th>
+                                            <th>Tax Rate</th>
+                                            <th>Work Optional</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-biz-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- ── ATTENTION REQUIRED ── -->
+                        <div class="card">
+                            <h3 class="card-title" style="color:#fb923c; margin-bottom:16px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;display:inline;margin-right:6px;vertical-align:middle;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                Clients Needing Attention
+                            </h3>
+                            <div id="attention-content"></div>
+                        </div>
+
+                    </div><!-- /dashboard-content -->
                 </div>
 
                 <!-- PAGE: Reconciliation -->
@@ -2464,26 +2549,37 @@
 
         // ==================== BUSINESS FUNCTIONS ====================
         async function loadBusinesses() {
-            const data = await apiCall('/api/business');
             const tbody = document.getElementById('businessesTableBody');
-            if (!data || !data.data) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No businesses found</td></tr>';
-                return;
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:#94a3b8;">Loading businesses...</td></tr>';
+            try {
+                const resp = await fetch(PLANNING_APP_URL + '/api/businesses');
+                if (!resp.ok) throw new Error('Failed to fetch');
+                const businesses = await resp.json();
+                if (!businesses || businesses.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;">No business clients found. Click Add Business to create one.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = businesses.map(b => {
+                    const revenue = b.revenue ? '$' + parseFloat(b.revenue).toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+                    const deepLink = PLANNING_APP_URL + '/business?bid=' + b.id;
+                    return `
+                        <tr>
+                            <td style="font-weight:500;">${b.firm_name || '—'}</td>
+                            <td><span style="background:#1e293b;border:1px solid #334155;padding:2px 8px;border-radius:12px;font-size:12px;">${b.entity_type || '—'}</span></td>
+                            <td style="color:#10b981;font-weight:500;">${revenue}</td>
+                            <td>${b.num_employees || '—'}</td>
+                            <td>${b.primary_contact || '—'}</td>
+                            <td>${b.work_optional_target ? b.work_optional_target : '—'}</td>
+                            <td style="display:flex;gap:6px;">
+                                <button class="btn btn-sm btn-primary" onclick="window.open('${deepLink}','_blank')">Open</button>
+                                <button class="btn btn-sm btn-secondary" onclick="window.open('${PLANNING_APP_URL}/business','_blank')">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding:40px;color:#f87171;">Could not load businesses from planning app.</td></tr>';
             }
-
-            tbody.innerHTML = data.data.map(biz => `
-                <tr>
-                    <td>${biz.name || '-'}</td>
-                    <td>${biz.ein || '-'}</td>
-                    <td>${biz.entity_type || '-'}</td>
-                    <td>${biz.industry || '-'}</td>
-                    <td><span class="table-status"><span class="table-status-dot active"></span>Active</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary" onclick="showBusinessDetail(${biz.id})">View</button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteBusiness(${biz.id})">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
         }
 
         async function createBusiness() {
@@ -2751,102 +2847,338 @@
         }
 
         // ==================== DASHBOARD ====================
-        async function loadDashboard() {
-            const data = await apiCall('/api/stats');
-            if (!data || !data.data) return;
-
-            const stats = data.data;
-            const statsContainer = document.getElementById('dashboardStats');
-            statsContainer.innerHTML = `
-                <div class="stat-card stat-indigo">
-                    <div class="stat-card-label">Total Clients</div>
-                    <div class="stat-card-value">${stats.total_clients || 0}</div>
-                </div>
-                <div class="stat-card stat-emerald">
-                    <div class="stat-card-label">Total AUM</div>
-                    <div class="stat-card-value">${formatCurrency(stats.total_aum || 0)}</div>
-                </div>
-                <div class="stat-card stat-gold">
-                    <div class="stat-card-label">Active Businesses</div>
-                    <div class="stat-card-value">${stats.active_businesses || 0}</div>
-                </div>
-                <div class="stat-card stat-rose">
-                    <div class="stat-card-label">Monthly Revenue</div>
-                    <div class="stat-card-value">${formatCurrency(stats.monthly_revenue || 0)}</div>
-                </div>
-            `;
-
-            initCharts(stats);
+        const _dashCharts = {};
+        function _destroyChart(key) { if (_dashCharts[key]) { _dashCharts[key].destroy(); delete _dashCharts[key]; } }
+        const _chartDefaults = {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { labels: { color: 'rgba(241,245,249,0.75)', font: { size: 11 } } } },
+            scales: {
+                x: { ticks: { color: 'rgba(241,245,249,0.65)', font:{size:10} }, grid: { display: false } },
+                y: { ticks: { color: 'rgba(241,245,249,0.65)', font:{size:10} }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        };
+        function _fc(n) { return '$' + (n||0).toLocaleString('en-US',{maximumFractionDigits:0}); }
+        function _successColor(pct) {
+            if (pct >= 80) return '#10b981';
+            if (pct >= 60) return '#f59e0b';
+            return '#f87171';
         }
 
-        function initCharts(stats) {
-            // AUM Chart
-            const aumCtx = document.getElementById('aumChart');
-            if (aumCtx) {
-                if (aumChart) aumChart.destroy();
-                aumChart = new Chart(aumCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                        datasets: [{
-                            label: 'AUM',
-                            data: [stats.total_aum * 0.8, stats.total_aum * 0.85, stats.total_aum * 0.90, stats.total_aum * 0.95, stats.total_aum, stats.total_aum * 1.05],
-                            borderColor: 'rgba(99, 102, 241, 1)',
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                        }],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { color: 'rgba(241, 245, 249, 0.7)' },
-                                grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            },
-                            x: {
-                                ticks: { color: 'rgba(241, 245, 249, 0.7)' },
-                                grid: { display: false },
-                            },
-                        },
-                    },
-                });
-            }
+        async function loadDashboard() {
+            document.getElementById('dashboard-loading').style.display = 'block';
+            document.getElementById('dashboard-content').style.display = 'none';
 
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart');
-            if (revenueCtx) {
-                if (revenueChart) revenueChart.destroy();
-                revenueChart = new Chart(revenueCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Individual', 'Family', 'Business'],
-                        datasets: [{
-                            data: [
-                                stats.total_aum * 0.4,
-                                stats.total_aum * 0.35,
-                                stats.total_aum * 0.25,
-                            ],
-                            backgroundColor: [
-                                'rgba(99, 102, 241, 0.8)',
-                                'rgba(16, 185, 129, 0.8)',
-                                'rgba(245, 158, 11, 0.8)',
-                            ],
-                        }],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                labels: { color: 'rgba(241, 245, 249, 0.7)' },
-                            },
-                        },
-                    },
+            try {
+                // ── Fetch all households + businesses in parallel ──
+                const [households, businesses] = await Promise.all([
+                    fetch(PLANNING_APP_URL + '/api/households').then(r => r.json()).catch(() => []),
+                    fetch(PLANNING_APP_URL + '/api/businesses').then(r => r.json()).catch(() => [])
+                ]);
+
+                // ── Fetch dashboard data for each household ──
+                const dashResults = await Promise.all(
+                    households.map(h =>
+                        fetch(PLANNING_APP_URL + '/api/dashboard/' + h.id)
+                            .then(r => r.json())
+                            .catch(() => ({ household: h, net_worth: 0, total_assets: 0, total_liabilities: 0, total_household_income: 0, goals: [], scenarios: [] }))
+                    )
+                );
+
+                // ── Aggregate practice-level stats ──
+                let totalAUM = 0, totalLiabilities = 0, totalIncome = 0, totalGoals = 0;
+                let needCount = 0, wantCount = 0, wishCount = 0;
+                const successRates = [];
+                const clientAUM = [], clientLabels = [], clientAssets = [], clientLiabs = [];
+
+                dashResults.forEach((d, i) => {
+                    const h = households[i];
+                    const name = h.co_first
+                        ? `${h.primary_last} & ${h.co_first}`
+                        : `${h.primary_first} ${h.primary_last}`;
+                    const assets = parseFloat(d.total_assets) || 0;
+                    const liabs  = parseFloat(d.total_liabilities) || 0;
+                    const income = parseFloat(d.total_household_income) || 0;
+                    totalAUM        += assets;
+                    totalLiabilities += liabs;
+                    totalIncome     += income;
+                    totalGoals      += (d.goals || []).length;
+                    (d.goals || []).forEach(g => {
+                        const p = (g.priority || '').toLowerCase();
+                        if (p === 'need') needCount++;
+                        else if (p === 'want') wantCount++;
+                        else wishCount++;
+                    });
+                    if (assets > 0) {
+                        clientLabels.push(name);
+                        clientAUM.push(assets);
+                        clientAssets.push(assets);
+                        clientLiabs.push(liabs);
+                    }
+                    const scenarios = d.scenarios || [];
+                    const baseScenario = scenarios.find(s => s.is_baseline) || scenarios[0];
+                    if (baseScenario && baseScenario.probability_of_success != null) {
+                        successRates.push({ name, pct: parseFloat(baseScenario.probability_of_success), hid: h.id, assets });
+                    } else if (assets === 0) {
+                        successRates.push({ name, pct: null, hid: h.id, assets, incomplete: true });
+                    }
                 });
+
+                const totalNetWorth = totalAUM - totalLiabilities;
+                const avgSuccess = successRates.filter(s => s.pct != null).length > 0
+                    ? successRates.filter(s => s.pct != null).reduce((a,b) => a + b.pct, 0) / successRates.filter(s => s.pct != null).length
+                    : null;
+
+                // Business aggregates
+                const bizRevenue   = businesses.reduce((s,b) => s + parseFloat(b.revenue||0), 0);
+                const bizEmployees = businesses.reduce((s,b) => s + (parseInt(b.num_employees)||0), 0);
+                const bizOwners    = businesses.reduce((s,b) => s + (parseInt(b.num_owners)||0), 0);
+                const bizAvgTax    = businesses.length > 0
+                    ? businesses.reduce((s,b) => s + parseFloat(b.effective_tax_rate||0), 0) / businesses.length
+                    : 0;
+
+                // ── Sort AUM chart data descending ──
+                const aumSorted = clientLabels.map((l,i) => ({ l, a: clientAUM[i], li: clientLiabs[i] }))
+                    .sort((a,b) => b.a - a.a);
+                const sortedLabels  = aumSorted.map(x => x.l);
+                const sortedAssets  = aumSorted.map(x => x.a);
+                const sortedLiabs   = aumSorted.map(x => x.li);
+
+                // ── Render KPI Cards ──
+                document.getElementById('dash-kpi-row').innerHTML = [
+                    { label: 'Total Households', value: households.length, color: '#6366f1', sub: `${households.filter((_,i) => (dashResults[i].total_assets||0)>0).length} with active plans` },
+                    { label: 'Total AUM',         value: _fc(totalAUM),      color: '#10b981', sub: `Net Worth: ${_fc(totalNetWorth)}` },
+                    { label: 'Total Liabilities', value: _fc(totalLiabilities), color: '#f87171', sub: `${((totalLiabilities/totalAUM)*100).toFixed(1)}% of AUM` },
+                    { label: 'Annual Income',     value: _fc(totalIncome),   color: '#f59e0b', sub: `Across ${households.filter((_,i)=>(dashResults[i].total_household_income||0)>0).length} households` },
+                    { label: 'Active Businesses', value: businesses.length,  color: '#a78bfa', sub: `${_fc(bizRevenue)} total revenue` },
+                    { label: 'Avg Plan Success',  value: avgSuccess != null ? avgSuccess.toFixed(1) + '%' : 'N/A',
+                      color: avgSuccess != null ? _successColor(avgSuccess) : '#94a3b8',
+                      sub: `${totalGoals} total goals tracked` }
+                ].map(k => `
+                    <div style="background:#111827;border:1px solid #1e293b;border-radius:10px;padding:18px 20px;border-top:3px solid ${k.color};">
+                        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#94a3b8;margin-bottom:6px;">${k.label}</div>
+                        <div style="font-size:24px;font-weight:700;color:${k.color};margin-bottom:4px;">${k.value}</div>
+                        <div style="font-size:11px;color:#64748b;">${k.sub}</div>
+                    </div>
+                `).join('');
+
+                // ── AUM by Household (horizontal bar) ──
+                _destroyChart('aumByClient');
+                const aumCtx = document.getElementById('aumByClientChart');
+                if (aumCtx) {
+                    _dashCharts['aumByClient'] = new Chart(aumCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: sortedLabels,
+                            datasets: [{
+                                label: 'Total Assets',
+                                data: sortedAssets,
+                                backgroundColor: 'rgba(99,102,241,0.75)',
+                                borderColor: 'rgba(99,102,241,1)',
+                                borderWidth: 1,
+                                borderRadius: 3,
+                            }]
+                        },
+                        options: {
+                            ..._chartDefaults,
+                            indexAxis: 'y',
+                            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + _fc(ctx.raw) } } },
+                            scales: {
+                                x: { ticks: { color: 'rgba(241,245,249,0.65)', callback: v => '$' + (v/1e6).toFixed(1)+'M' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                                y: { ticks: { color: 'rgba(241,245,249,0.8)', font:{size:10} }, grid: { display:false } }
+                            }
+                        }
+                    });
+                }
+
+                // ── Plan Success Rates ──
+                const successSorted = [...successRates].sort((a,b) => (a.pct ?? -1) - (b.pct ?? -1));
+                document.getElementById('successRatesContent').innerHTML = successSorted.map(s => {
+                    const pct = s.pct;
+                    const color = s.incomplete ? '#64748b' : _successColor(pct);
+                    const bar   = s.incomplete ? 0 : pct;
+                    const label = s.incomplete ? 'Incomplete profile' : pct.toFixed(1) + '%';
+                    return `
+                        <div style="margin-bottom:10px;cursor:pointer;" onclick="window.open('${PLANNING_APP_URL}/individual?hid=${s.hid}','_blank')">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                                <span style="font-size:12px;color:#e2e8f0;">${s.name}</span>
+                                <span style="font-size:12px;font-weight:600;color:${color};">${label}</span>
+                            </div>
+                            <div style="background:#1e293b;border-radius:4px;height:6px;overflow:hidden;">
+                                <div style="background:${color};width:${bar}%;height:100%;border-radius:4px;transition:width .4s;"></div>
+                            </div>
+                        </div>`;
+                }).join('');
+
+                // ── Goals Donut ──
+                _destroyChart('goalsDonut');
+                const goalsCtx = document.getElementById('goalsDonutChart');
+                if (goalsCtx && (needCount+wantCount+wishCount) > 0) {
+                    _dashCharts['goalsDonut'] = new Chart(goalsCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Need', 'Want', 'Wish'],
+                            datasets: [{ data: [needCount, wantCount, wishCount],
+                                backgroundColor: ['rgba(248,113,113,0.85)','rgba(245,158,11,0.85)','rgba(99,102,241,0.85)'],
+                                borderColor: ['#f87171','#f59e0b','#6366f1'], borderWidth: 2 }]
+                        },
+                        options: { ...(_chartDefaults), cutout: '65%',
+                            plugins: { legend: { position: 'bottom', labels: { color:'rgba(241,245,249,0.75)', padding:14, font:{size:11} } },
+                                tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw} goals` } } },
+                            scales: { x: { display: false }, y: { display: false } }
+                        }
+                    });
+                    document.getElementById('goalsLegend').innerHTML = `
+                        <div style="display:flex;justify-content:center;gap:24px;font-size:12px;color:#94a3b8;">
+                            <span><span style="color:#f87171;font-weight:700;">${needCount}</span> Need</span>
+                            <span><span style="color:#f59e0b;font-weight:700;">${wantCount}</span> Want</span>
+                            <span><span style="color:#6366f1;font-weight:700;">${wishCount}</span> Wish</span>
+                            <span style="color:#64748b;">Total: ${needCount+wantCount+wishCount}</span>
+                        </div>`;
+                }
+
+                // ── Assets vs Liabilities grouped bar ──
+                _destroyChart('assetsLiab');
+                const alCtx = document.getElementById('assetsLiabChart');
+                if (alCtx) {
+                    _dashCharts['assetsLiab'] = new Chart(alCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: sortedLabels,
+                            datasets: [
+                                { label: 'Assets', data: sortedAssets, backgroundColor: 'rgba(16,185,129,0.7)', borderColor: 'rgba(16,185,129,1)', borderWidth:1, borderRadius:3 },
+                                { label: 'Liabilities', data: sortedLiabs, backgroundColor: 'rgba(248,113,113,0.7)', borderColor: 'rgba(248,113,113,1)', borderWidth:1, borderRadius:3 }
+                            ]
+                        },
+                        options: {
+                            ..._chartDefaults,
+                            plugins: { legend: { labels: { color:'rgba(241,245,249,0.75)', font:{size:11} } },
+                                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${_fc(ctx.raw)}` } } },
+                            scales: {
+                                x: { ticks: { color:'rgba(241,245,249,0.55)', font:{size:9}, maxRotation:35 }, grid:{display:false} },
+                                y: { ticks: { color:'rgba(241,245,249,0.65)', callback: v => '$'+(v/1e6).toFixed(1)+'M' }, grid:{color:'rgba(255,255,255,0.05)'} }
+                            }
+                        }
+                    });
+                }
+
+                // ── Business KPI mini-cards ──
+                document.getElementById('biz-kpi-row').innerHTML = [
+                    { label: 'Total Businesses', value: businesses.length, color: '#a78bfa' },
+                    { label: 'Total Revenue',     value: _fc(bizRevenue),  color: '#10b981' },
+                    { label: 'Total Employees',   value: bizEmployees,     color: '#6366f1' },
+                    { label: 'Total Owners',      value: bizOwners,        color: '#f59e0b' },
+                ].map(k => `
+                    <div style="background:#0d1321;border:1px solid #1e293b;border-radius:8px;padding:14px 16px;text-align:center;">
+                        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#64748b;margin-bottom:4px;">${k.label}</div>
+                        <div style="font-size:20px;font-weight:700;color:${k.color};">${k.value}</div>
+                    </div>`).join('');
+
+                // ── Business Revenue bar + Entity pie ──
+                _destroyChart('bizRevenue');
+                const bizRevCtx = document.getElementById('bizRevenueChart');
+                if (bizRevCtx && businesses.length > 0) {
+                    _dashCharts['bizRevenue'] = new Chart(bizRevCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: businesses.map(b => b.firm_name),
+                            datasets: [
+                                { label: 'Revenue', data: businesses.map(b => parseFloat(b.revenue||0)), backgroundColor: 'rgba(16,185,129,0.75)', borderColor: 'rgba(16,185,129,1)', borderWidth:1, borderRadius:4 },
+                                { label: 'Profit',  data: businesses.map(b => parseFloat(b.profit_before_comp||0)), backgroundColor: 'rgba(99,102,241,0.75)', borderColor: 'rgba(99,102,241,1)', borderWidth:1, borderRadius:4 }
+                            ]
+                        },
+                        options: { ..._chartDefaults,
+                            plugins: { legend: { labels: { color:'rgba(241,245,249,0.75)', font:{size:11} } },
+                                title: { display:true, text:'Revenue vs. Profit', color:'rgba(241,245,249,0.7)', font:{size:12} },
+                                tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${_fc(ctx.raw)}` } } },
+                            scales: {
+                                x: { ticks:{color:'rgba(241,245,249,0.6)',font:{size:10}}, grid:{display:false} },
+                                y: { ticks:{color:'rgba(241,245,249,0.6)', callback: v=>'$'+(v/1e6).toFixed(1)+'M'}, grid:{color:'rgba(255,255,255,0.05)'} }
+                            }
+                        }
+                    });
+                }
+
+                _destroyChart('bizEntity');
+                const bizEntityCtx = document.getElementById('bizEntityChart');
+                if (bizEntityCtx && businesses.length > 0) {
+                    const entityCounts = {};
+                    businesses.forEach(b => { const e = b.entity_type||'Unknown'; entityCounts[e]=(entityCounts[e]||0)+1; });
+                    const entityColors = ['rgba(167,139,250,0.8)','rgba(99,102,241,0.8)','rgba(245,158,11,0.8)','rgba(16,185,129,0.8)','rgba(248,113,113,0.8)'];
+                    _dashCharts['bizEntity'] = new Chart(bizEntityCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(entityCounts),
+                            datasets: [{ data: Object.values(entityCounts), backgroundColor: entityColors.slice(0,Object.keys(entityCounts).length), borderWidth:2 }]
+                        },
+                        options: { ..._chartDefaults, cutout:'55%',
+                            plugins: { legend: { position:'bottom', labels:{color:'rgba(241,245,249,0.75)',padding:10,font:{size:11}} },
+                                title: { display:true, text:'Entity Types', color:'rgba(241,245,249,0.7)', font:{size:12} } },
+                            scales: { x:{display:false}, y:{display:false} }
+                        }
+                    });
+                }
+
+                // ── Business summary table ──
+                document.getElementById('dash-biz-tbody').innerHTML = businesses.length === 0
+                    ? `<tr><td colspan="9" class="text-center" style="padding:20px;color:#64748b;">No business clients in the system yet.</td></tr>`
+                    : businesses.map(b => `
+                        <tr>
+                            <td style="font-weight:500;">${b.firm_name||'—'}</td>
+                            <td><span style="background:#1e293b;border:1px solid #334155;padding:2px 8px;border-radius:12px;font-size:11px;">${b.entity_type||'—'}</span></td>
+                            <td style="color:#10b981;">${_fc(parseFloat(b.revenue||0))}</td>
+                            <td style="color:#6366f1;">${_fc(parseFloat(b.profit_before_comp||0))}</td>
+                            <td>${b.num_owners||'—'}</td>
+                            <td>${b.num_employees||'—'}</td>
+                            <td style="color:${parseFloat(b.effective_tax_rate||0)>35?'#f87171':'#f59e0b'};">${b.effective_tax_rate||'—'}%</td>
+                            <td>${b.work_optional_target||'—'}</td>
+                            <td><button class="btn btn-sm btn-primary" onclick="window.open('${PLANNING_APP_URL}/business?bid=${b.id}','_blank')">Open</button></td>
+                        </tr>`).join('');
+
+                // ── Attention Required ──
+                const atRisk = successRates.filter(s => s.pct !== null && s.pct < 60);
+                const incomplete = successRates.filter(s => s.incomplete);
+                const highDebt = dashResults.map((d,i) => {
+                    const assets = parseFloat(d.total_assets)||0;
+                    const liabs  = parseFloat(d.total_liabilities)||0;
+                    const ratio  = assets > 0 ? liabs/assets : 0;
+                    return { ...households[i], ratio, liabs, assets, hid: households[i].id };
+                }).filter(x => x.ratio > 0.4 && x.assets > 0);
+
+                let attentionHTML = '';
+                if (atRisk.length === 0 && incomplete.length === 0 && highDebt.length === 0) {
+                    attentionHTML = `<p style="color:#94a3b8;font-size:13px;">No clients requiring immediate attention. All plans are on track.</p>`;
+                } else {
+                    if (atRisk.length > 0) attentionHTML += `
+                        <p style="font-size:12px;font-weight:600;color:#f87171;margin-bottom:8px;">Low Plan Success Rate (&lt;60%)</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+                        ${atRisk.map(s=>`<div onclick="window.open('${PLANNING_APP_URL}/individual?hid=${s.hid}','_blank')" style="cursor:pointer;background:#1e1014;border:1px solid #7f1d1d;border-radius:8px;padding:10px 14px;font-size:12px;">
+                            <div style="font-weight:600;color:#fca5a5;">${s.name}</div>
+                            <div style="color:#f87171;font-size:14px;font-weight:700;margin-top:2px;">${s.pct.toFixed(1)}%</div>
+                        </div>`).join('')}</div>`;
+                    if (incomplete.length > 0) attentionHTML += `
+                        <p style="font-size:12px;font-weight:600;color:#f59e0b;margin-bottom:8px;">Incomplete Profiles (no financial data entered)</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+                        ${incomplete.map(s=>`<div onclick="window.open('${PLANNING_APP_URL}/individual?hid=${s.hid}','_blank')" style="cursor:pointer;background:#1c1609;border:1px solid #78350f;border-radius:8px;padding:10px 14px;font-size:12px;">
+                            <div style="font-weight:600;color:#fcd34d;">${s.name}</div>
+                            <div style="color:#f59e0b;font-size:11px;margin-top:2px;">No assets on file</div>
+                        </div>`).join('')}</div>`;
+                    if (highDebt.length > 0) attentionHTML += `
+                        <p style="font-size:12px;font-weight:600;color:#fb923c;margin-bottom:8px;">High Debt-to-Asset Ratio (&gt;40%)</p>
+                        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                        ${highDebt.map(x=>`<div onclick="window.open('${PLANNING_APP_URL}/individual?hid=${x.hid}','_blank')" style="cursor:pointer;background:#1c1209;border:1px solid #7c2d12;border-radius:8px;padding:10px 14px;font-size:12px;">
+                            <div style="font-weight:600;color:#fdba74;">${x.primary_first} ${x.primary_last}${x.co_first?' & '+x.co_first:''}</div>
+                            <div style="color:#fb923c;font-size:11px;margin-top:2px;">${(x.ratio*100).toFixed(0)}% debt ratio</div>
+                        </div>`).join('')}</div>`;
+                }
+                document.getElementById('attention-content').innerHTML = attentionHTML;
+
+                // ── Show content ──
+                document.getElementById('dashboard-loading').style.display = 'none';
+                document.getElementById('dashboard-content').style.display = 'block';
+
+            } catch(err) {
+                console.error('Dashboard load error:', err);
+                document.getElementById('dashboard-loading').innerHTML = `<p style="color:#f87171;">Error loading dashboard data. Check browser console for details.</p>`;
             }
         }
 
