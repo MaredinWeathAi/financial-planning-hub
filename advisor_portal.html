@@ -1057,6 +1057,159 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
         }
+
+        /* ==================== PILLAR CARDS (Home Page) ==================== */
+        .pillar-welcome {
+            text-align: center;
+            padding: 40px 0 48px;
+        }
+
+        .pillar-welcome h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .pillar-welcome p {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .pillar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .pillar-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 40px 32px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .pillar-card.indigo::before { background: var(--accent-indigo); }
+        .pillar-card.emerald::before { background: var(--accent-emerald); }
+        .pillar-card.gold::before { background: var(--accent-gold); }
+
+        .pillar-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .pillar-card.indigo:hover { border-color: var(--accent-indigo); }
+        .pillar-card.emerald:hover { border-color: var(--accent-emerald); }
+        .pillar-card.gold:hover { border-color: var(--accent-gold); }
+
+        .pillar-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .pillar-icon svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .pillar-card.indigo .pillar-icon { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); }
+        .pillar-card.emerald .pillar-icon { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+        .pillar-card.gold .pillar-icon { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); }
+
+        .pillar-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .pillar-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .pillar-features {
+            list-style: none;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 32px;
+        }
+
+        .pillar-features li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .pillar-features li:last-child { border-bottom: none; }
+
+        .pillar-features li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .pillar-card.indigo .pillar-features li::before { background: var(--accent-indigo); }
+        .pillar-card.emerald .pillar-features li::before { background: var(--accent-emerald); }
+        .pillar-card.gold .pillar-features li::before { background: var(--accent-gold); }
+
+        .pillar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-card.indigo .pillar-btn { background: var(--accent-indigo); color: white; }
+        .pillar-card.emerald .pillar-btn { background: var(--accent-emerald); color: white; }
+        .pillar-card.gold .pillar-btn { background: var(--accent-gold); color: #000; }
+
+        .pillar-btn:hover { opacity: 0.88; transform: scale(1.03); }
+
+        @media (max-width: 900px) {
+            .pillar-grid { grid-template-columns: 1fr; max-width: 480px; }
+        }
     </style>
 </head>
 <body>
@@ -1069,6 +1222,17 @@
                     <div class="company">Maredin</div>
                     <div class="tagline">Wealth Advisors</div>
                 </div>
+            </div>
+
+            <!-- Home -->
+            <div class="nav-section">
+                <a class="nav-item active" onclick="showPage('page-home')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    <span class="nav-item-label">Home</span>
+                </a>
             </div>
 
             <!-- Individual/Family Section -->
@@ -1191,8 +1355,95 @@
             <!-- Content Area -->
             <div class="content">
 
+                <!-- ==================== PAGE: HOME (3 Pillars) ==================== -->
+                <div id="page-home" class="page">
+                    <div class="pillar-welcome">
+                        <h1>Welcome back, <span id="home-advisor-name">Advisor</span></h1>
+                        <p>Choose a section to get started</p>
+                    </div>
+
+                    <div class="pillar-grid">
+
+                        <!-- PILLAR 1: Individual / Family -->
+                        <a class="pillar-card indigo" id="pillar-individual" href="#" onclick="openIndividual(event)">
+                            <div class="pillar-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                            </div>
+                            <div class="pillar-title">Individual / Family</div>
+                            <p class="pillar-desc">Full financial planning for individuals and families — goals, assets, income, scenarios, and reports.</p>
+                            <ul class="pillar-features">
+                                <li>Household management & profiles</li>
+                                <li>Goals, assets & liabilities</li>
+                                <li>Income, expenses & budgeting</li>
+                                <li>Insurance & trust/estate</li>
+                                <li>Scenarios & Monte Carlo</li>
+                                <li>Reports & presentations</li>
+                            </ul>
+                            <span class="pillar-btn">
+                                Open Planning App
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </span>
+                        </a>
+
+                        <!-- PILLAR 2: Business -->
+                        <a class="pillar-card emerald" id="pillar-business" href="#" onclick="openBusiness(event)">
+                            <div class="pillar-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                </svg>
+                            </div>
+                            <div class="pillar-title">Business</div>
+                            <p class="pillar-desc">Complete business client management — ownership, employees, census data, financials, and contributions.</p>
+                            <ul class="pillar-features">
+                                <li>Business profiles & entity types</li>
+                                <li>Owners, key employees & census</li>
+                                <li>Corporate & individual contributions</li>
+                                <li>Business financials & P&L</li>
+                                <li>Document import & storage</li>
+                                <li>Auto-link to individual clients</li>
+                            </ul>
+                            <span class="pillar-btn">
+                                Manage Businesses
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </span>
+                        </a>
+
+                        <!-- PILLAR 3: Analytics -->
+                        <a class="pillar-card gold" id="pillar-analytics" href="#" onclick="openAnalytics(event)">
+                            <div class="pillar-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                                </svg>
+                            </div>
+                            <div class="pillar-title">Analytics</div>
+                            <p class="pillar-desc">Practice-wide analytics, reconciliation, fee reporting, invoice generation, and billing management.</p>
+                            <ul class="pillar-features">
+                                <li>AUM & revenue dashboard</li>
+                                <li>Account reconciliation</li>
+                                <li>Fee & billing reports</li>
+                                <li>Invoice generation & history</li>
+                                <li>Client activity overview</li>
+                                <li>DocuSign import & processing</li>
+                            </ul>
+                            <span class="pillar-btn">
+                                View Analytics
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </span>
+                        </a>
+
+                    </div>
+                </div>
+
                 <!-- PAGE: Clients -->
-                <div id="page-clients" class="page active">
+                <div id="page-clients" class="page" >
                     <div class="flex-between mb-4">
                         <h2 style="font-size: 20px; font-weight: 600;">Manage Clients</h2>
                         <button class="btn btn-primary" onclick="openModal('modal-create-client')">
@@ -2022,6 +2273,7 @@
 
         function updatePageTitle(pageId) {
             const titles = {
+                'page-home': 'Advisor Portal',
                 'page-clients': 'Clients',
                 'page-client-detail': 'Client Detail',
                 'page-client-intake': 'Client Intake',
@@ -2762,6 +3014,43 @@
         }
 
         // ==================== AUTH ====================
+        // ==================== PILLAR URL CONFIG ====================
+        // Update INDIVIDUAL_APP_URL to point to your planning app.
+        // Locally it runs at http://localhost:3001
+        // In production, set it to the Railway URL of your planning app.
+        const PILLAR_CONFIG = {
+            individual: 'http://localhost:3001/individual',
+            business: null,   // null = stay in this portal (manage businesses internally)
+            analytics: null   // null = stay in this portal
+        };
+
+        function openIndividual(e) {
+            e.preventDefault();
+            if (PILLAR_CONFIG.individual) {
+                window.location.href = PILLAR_CONFIG.individual;
+            } else {
+                showPage('page-clients');
+            }
+        }
+
+        function openBusiness(e) {
+            e.preventDefault();
+            if (PILLAR_CONFIG.business) {
+                window.location.href = PILLAR_CONFIG.business;
+            } else {
+                showPage('page-businesses');
+            }
+        }
+
+        function openAnalytics(e) {
+            e.preventDefault();
+            if (PILLAR_CONFIG.analytics) {
+                window.location.href = PILLAR_CONFIG.analytics;
+            } else {
+                showPage('page-dashboard');
+            }
+        }
+
         async function checkAuth() {
             const data = await apiCall('/api/auth/me');
             if (!data || !data.data) {
@@ -2769,7 +3058,12 @@
                 return;
             }
             currentUser = data.data;
-            showPage('page-clients');
+            // Set the advisor's name on the home page
+            const nameEl = document.getElementById('home-advisor-name');
+            if (nameEl && currentUser.name) {
+                nameEl.textContent = currentUser.name;
+            }
+            showPage('page-home');
         }
 
         async function handleLogout() {
