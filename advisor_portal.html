@@ -1259,6 +1259,15 @@
                     </svg>
                     <span class="nav-item-label">Client Intake</span>
                 </a>
+                <a class="nav-item" onclick="showPage('page-individual-upload')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <polyline points="9 15 12 12 15 15"></polyline>
+                    </svg>
+                    <span class="nav-item-label">Upload &amp; Analyze</span>
+                </a>
             </div>
 
             <!-- Business Section -->
@@ -1278,6 +1287,15 @@
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
                     <span class="nav-item-label">Business Intake</span>
+                </a>
+                <a class="nav-item" onclick="showPage('page-business-upload')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="18" x2="12" y2="12"></line>
+                        <polyline points="9 15 12 12 15 15"></polyline>
+                    </svg>
+                    <span class="nav-item-label">Upload &amp; Analyze</span>
                 </a>
             </div>
 
@@ -1982,6 +2000,110 @@
                     </div>
                 </div>
 
+                <!-- PAGE: Individual Upload & Analyze -->
+                <div id="page-individual-upload" class="page">
+                    <div class="flex-between mb-4">
+                        <h2 style="font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload &amp; Analyze — Individual / Household
+                        </h2>
+                    </div>
+
+                    <!-- Client Selector -->
+                    <div class="card mb-4" style="padding: 1rem 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Select Household</label>
+                            <select class="form-input" id="indUploadClientSelect" onchange="onIndUploadClientChange()">
+                                <option value="">— Select a household to upload documents for —</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div id="indUploadZoneWrap" style="display:none;">
+                        <div class="upload-dropzone" id="indUploadZone" style="border: 2px dashed rgba(99,102,241,0.3); border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; background: rgba(99,102,241,0.04); margin-bottom: 1.5rem; transition: all 0.3s;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom:1rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">Drop PDF files here</h3>
+                            <p style="font-size:0.875rem;color:var(--text-secondary);">Brokerage statements, bank statements, tax docs, insurance policies, retirement plan docs, estate docs, and more.</p>
+                            <button style="margin-top:1rem;padding:0.625rem 1.5rem;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;" type="button" onclick="document.getElementById('indUploadInput').click()">Browse Files</button>
+                            <input type="file" id="indUploadInput" multiple accept=".pdf" style="display:none;">
+                        </div>
+
+                        <div id="indUploadProgress" style="display:none;margin:1rem 0;padding:1rem 1.5rem;background:var(--card-bg);border-radius:10px;border:1px solid var(--border);">
+                            <div id="indProgressText" style="font-size:0.875rem;color:var(--text-secondary);">Analyzing...</div>
+                            <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:0.5rem;">
+                                <div id="indProgressFill" style="height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);border-radius:3px;transition:width 0.3s;width:0%;"></div>
+                            </div>
+                        </div>
+
+                        <div id="indAnalysisResults"></div>
+
+                        <div id="indConfirmAllWrap" style="display:none;margin-top:1.5rem;">
+                            <button id="indConfirmAllBtn" onclick="confirmAllInd()" style="padding:0.75rem 2rem;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:1rem;width:100%;">
+                                Apply All Extracted Data to Household Plan
+                            </button>
+                        </div>
+
+                        <div id="indImportHistory" style="margin-top:2rem;"></div>
+                    </div>
+                </div>
+
+                <!-- PAGE: Business Upload & Analyze -->
+                <div id="page-business-upload" class="page">
+                    <div class="flex-between mb-4">
+                        <h2 style="font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Upload &amp; Analyze — Business
+                        </h2>
+                    </div>
+
+                    <!-- Business Selector -->
+                    <div class="card mb-4" style="padding: 1rem 1.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label">Select Business</label>
+                            <select class="form-input" id="bizUploadSelect" onchange="onBizUploadChange()">
+                                <option value="">— Select a business to upload documents for —</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div id="bizUploadZoneWrap" style="display:none;">
+                        <div class="upload-dropzone" id="bizUploadZone" style="border: 2px dashed rgba(99,102,241,0.3); border-radius: 16px; padding: 3rem 2rem; text-align: center; cursor: pointer; background: rgba(99,102,241,0.04); margin-bottom: 1.5rem; transition: all 0.3s;">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5" style="margin-bottom:1rem;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                            <h3 style="font-size:1.125rem;margin-bottom:0.5rem;">Drop Business PDF files here</h3>
+                            <p style="font-size:0.875rem;color:var(--text-secondary);">P&L statements, balance sheets, cash flow statements, tax returns (1120/1120S/1065), bank statements, valuations, and more.</p>
+                            <button style="margin-top:1rem;padding:0.625rem 1.5rem;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:600;cursor:pointer;" type="button" onclick="document.getElementById('bizUploadInput').click()">Browse Files</button>
+                            <input type="file" id="bizUploadInput" multiple accept=".pdf" style="display:none;">
+                        </div>
+
+                        <div id="bizUploadProgress" style="display:none;margin:1rem 0;padding:1rem 1.5rem;background:var(--card-bg);border-radius:10px;border:1px solid var(--border);">
+                            <div id="bizProgressText" style="font-size:0.875rem;color:var(--text-secondary);">Analyzing...</div>
+                            <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:0.5rem;">
+                                <div id="bizProgressFill" style="height:100%;background:linear-gradient(90deg,var(--accent),#8b5cf6);border-radius:3px;transition:width 0.3s;width:0%;"></div>
+                            </div>
+                        </div>
+
+                        <div id="bizAnalysisResults"></div>
+
+                        <div id="bizConfirmAllWrap" style="display:none;margin-top:1.5rem;">
+                            <button id="bizConfirmAllBtn" onclick="confirmAllBiz()" style="padding:0.75rem 2rem;background:linear-gradient(135deg,var(--accent),#8b5cf6);color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:1rem;width:100%;">
+                                Apply All Extracted Data to Business Profile
+                            </button>
+                        </div>
+
+                        <div id="bizImportHistory" style="margin-top:2rem;"></div>
+                    </div>
+                </div>
+
                 <!-- PAGE: Settings -->
                 <div id="page-settings" class="page">
                     <div class="flex-between mb-4">
@@ -2370,6 +2492,8 @@
                 'page-reports': 'Reports',
                 'page-invoices': 'Invoices',
                 'page-settings': 'Settings',
+                'page-individual-upload': 'Upload & Analyze — Individual',
+                'page-business-upload': 'Upload & Analyze — Business',
             };
             document.getElementById('pageTitle').textContent = titles[pageId] || 'Maredin';
         }
@@ -2379,6 +2503,8 @@
             if (pageId === 'page-businesses') loadBusinesses();
             if (pageId === 'page-dashboard') loadDashboard();
             if (pageId === 'page-invoices') loadInvoices();
+            if (pageId === 'page-individual-upload') initIndUploadPage();
+            if (pageId === 'page-business-upload') initBizUploadPage();
         }
 
         // ==================== TAB SWITCHING ====================
@@ -3411,6 +3537,315 @@
             if (!confirm('Are you sure you want to logout?')) return;
             await apiCall('/api/auth/logout', { method: 'POST' });
             window.location.href = '/login';
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Smart Upload & Analyze — Individual
+        // ═══════════════════════════════════════════════════════════
+        let indAnalysisResults = [];
+        let bizAnalysisResults = [];
+
+        async function initIndUploadPage() {
+            const select = document.getElementById('indUploadClientSelect');
+            if (!select) return;
+            try {
+                const resp = await apiCall('/api/households');
+                if (resp && resp.data) {
+                    select.innerHTML = '<option value="">— Select a household —</option>' +
+                        resp.data.map(h => `<option value="${h.id}">${h.name}${h.company ? ' (' + h.company + ')' : ''}</option>`).join('');
+                }
+            } catch(e) {
+                console.warn('Could not load clients for upload:', e);
+            }
+
+            // Setup drag/drop
+            setupUploadZone('indUploadZone', 'indUploadInput', handleIndUpload);
+        }
+
+        function onIndUploadClientChange() {
+            const cid = document.getElementById('indUploadClientSelect').value;
+            document.getElementById('indUploadZoneWrap').style.display = cid ? 'block' : 'none';
+            if (cid) loadIndImportHistory(cid);
+        }
+
+        async function handleIndUpload(files) {
+            const clientId = document.getElementById('indUploadClientSelect').value;
+            if (!clientId) { alert('Please select a household first.'); return; }
+
+            const results = await doSmartUpload(files, 'individual', clientId, 'ind');
+            indAnalysisResults = results;
+        }
+
+        async function confirmAllInd() {
+            const clientId = document.getElementById('indUploadClientSelect').value;
+            if (!clientId) return;
+            await doConfirmAll(indAnalysisResults, 'individual', clientId, 'ind');
+            loadIndImportHistory(clientId);
+        }
+
+        async function confirmSingleInd(idx) {
+            const clientId = document.getElementById('indUploadClientSelect').value;
+            if (!clientId) return;
+            await doConfirmSingle(indAnalysisResults, idx, 'individual', clientId, 'ind');
+            loadIndImportHistory(clientId);
+        }
+
+        async function loadIndImportHistory(clientId) {
+            const el = document.getElementById('indImportHistory');
+            if (!el || !clientId) return;
+            try {
+                const resp = await apiCall('/api/smart-upload/history/' + clientId + '?type=individual');
+                if (resp && resp.data && resp.data.length > 0) {
+                    el.innerHTML = '<h4 style="font-weight:600;margin-bottom:12px;">Import History</h4>' +
+                        resp.data.slice(0, 20).map(item => {
+                            const dt = item.imported_at ? new Date(item.imported_at).toLocaleDateString() : '';
+                            const docLabel = (item.doc_type || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 1rem;background:var(--card-bg);border-radius:8px;margin-bottom:0.5rem;border:1px solid var(--border);font-size:0.875rem;">
+                                <div style="font-size:1.25rem;">&#x1F4C4;</div>
+                                <div><div style="font-weight:500;">${item.filename||'Document'}</div><div style="color:var(--text-secondary);font-size:0.8rem;">${docLabel} — ${item.summary||''}</div></div>
+                                <div style="margin-left:auto;color:var(--text-secondary);font-size:0.8rem;">${dt}</div>
+                            </div>`;
+                        }).join('');
+                } else { el.innerHTML = ''; }
+            } catch(e) { console.warn('Import history error:', e); }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Smart Upload & Analyze — Business
+        // ═══════════════════════════════════════════════════════════
+        async function initBizUploadPage() {
+            const select = document.getElementById('bizUploadSelect');
+            if (!select) return;
+            try {
+                const resp = await apiCall('/api/businesses');
+                if (resp && resp.data) {
+                    select.innerHTML = '<option value="">— Select a business —</option>' +
+                        resp.data.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                }
+            } catch(e) {
+                console.warn('Could not load businesses for upload:', e);
+            }
+
+            setupUploadZone('bizUploadZone', 'bizUploadInput', handleBizUpload);
+        }
+
+        function onBizUploadChange() {
+            const bid = document.getElementById('bizUploadSelect').value;
+            document.getElementById('bizUploadZoneWrap').style.display = bid ? 'block' : 'none';
+            if (bid) loadBizImportHistory(bid);
+        }
+
+        async function handleBizUpload(files) {
+            const bizId = document.getElementById('bizUploadSelect').value;
+            if (!bizId) { alert('Please select a business first.'); return; }
+
+            const results = await doSmartUpload(files, 'business', bizId, 'biz');
+            bizAnalysisResults = results;
+        }
+
+        async function confirmAllBiz() {
+            const bizId = document.getElementById('bizUploadSelect').value;
+            if (!bizId) return;
+            await doConfirmAll(bizAnalysisResults, 'business', bizId, 'biz');
+            loadBizImportHistory(bizId);
+        }
+
+        async function confirmSingleBiz(idx) {
+            const bizId = document.getElementById('bizUploadSelect').value;
+            if (!bizId) return;
+            await doConfirmSingle(bizAnalysisResults, idx, 'business', bizId, 'biz');
+            loadBizImportHistory(bizId);
+        }
+
+        async function loadBizImportHistory(bizId) {
+            const el = document.getElementById('bizImportHistory');
+            if (!el || !bizId) return;
+            try {
+                const resp = await apiCall('/api/smart-upload/history/' + bizId + '?type=business');
+                if (resp && resp.data && resp.data.length > 0) {
+                    el.innerHTML = '<h4 style="font-weight:600;margin-bottom:12px;">Import History</h4>' +
+                        resp.data.slice(0, 20).map(item => {
+                            const dt = item.imported_at ? new Date(item.imported_at).toLocaleDateString() : '';
+                            const docLabel = (item.doc_type || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            return `<div style="display:flex;align-items:center;gap:0.75rem;padding:0.625rem 1rem;background:var(--card-bg);border-radius:8px;margin-bottom:0.5rem;border:1px solid var(--border);font-size:0.875rem;">
+                                <div style="font-size:1.25rem;">&#x1F4C4;</div>
+                                <div><div style="font-weight:500;">${item.filename||'Document'}</div><div style="color:var(--text-secondary);font-size:0.8rem;">${docLabel} — ${item.summary||''}</div></div>
+                                <div style="margin-left:auto;color:var(--text-secondary);font-size:0.8rem;">${dt}</div>
+                            </div>`;
+                        }).join('');
+                } else { el.innerHTML = ''; }
+            } catch(e) { console.warn('Import history error:', e); }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Shared Upload Helper Functions
+        // ═══════════════════════════════════════════════════════════
+        function setupUploadZone(zoneId, inputId, handler) {
+            const zone = document.getElementById(zoneId);
+            const input = document.getElementById(inputId);
+            if (!zone || !input) return;
+
+            zone.addEventListener('click', (e) => { if (e.target.tagName !== 'BUTTON') input.click(); });
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.style.borderColor = 'var(--accent)'; zone.style.background = 'rgba(99,102,241,0.08)'; });
+            zone.addEventListener('dragleave', () => { zone.style.borderColor = 'rgba(99,102,241,0.3)'; zone.style.background = 'rgba(99,102,241,0.04)'; });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.style.borderColor = 'rgba(99,102,241,0.3)';
+                zone.style.background = 'rgba(99,102,241,0.04)';
+                if (e.dataTransfer.files.length) handler(e.dataTransfer.files);
+            });
+            input.addEventListener('change', () => { if (input.files.length) handler(input.files); input.value = ''; });
+        }
+
+        async function doSmartUpload(files, targetType, targetId, prefix) {
+            const progressEl = document.getElementById(prefix + 'UploadProgress');
+            const progressText = document.getElementById(prefix + 'ProgressText');
+            const progressFill = document.getElementById(prefix + 'ProgressFill');
+            const resultsEl = document.getElementById(prefix + 'AnalysisResults');
+            const confirmWrap = document.getElementById(prefix + 'ConfirmAllWrap');
+
+            progressEl.style.display = 'block';
+            resultsEl.innerHTML = '';
+            confirmWrap.style.display = 'none';
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) formData.append('files', files[i]);
+            formData.append('target_type', targetType);
+            formData.append('target_id', targetId);
+
+            progressText.textContent = `Analyzing ${files.length} document${files.length > 1 ? 's' : ''}...`;
+            progressFill.style.width = '30%';
+
+            let results = [];
+            try {
+                const res = await fetch('/api/smart-upload/analyze', {
+                    method: 'POST', body: formData, credentials: 'include',
+                });
+                const data = await res.json();
+                progressFill.style.width = '100%';
+
+                if (data.success && data.data && data.data.results) {
+                    results = data.data.results;
+                    progressText.textContent = `Analyzed ${data.data.successful} of ${data.data.total_files} files`;
+                    renderAdvisorResults(results, resultsEl, prefix);
+                    if (results.some(r => r.success)) confirmWrap.style.display = 'block';
+                } else {
+                    progressText.textContent = 'Analysis failed: ' + (data.error || 'Unknown error');
+                    progressFill.style.background = '#ef4444';
+                }
+            } catch(err) {
+                progressText.textContent = 'Upload failed: ' + err.message;
+                progressFill.style.background = '#ef4444';
+            }
+
+            setTimeout(() => { progressEl.style.display = 'none'; }, 5000);
+            return results;
+        }
+
+        function renderAdvisorResults(results, container, prefix) {
+            const confirmFn = prefix === 'ind' ? 'confirmSingleInd' : 'confirmSingleBiz';
+            container.innerHTML = results.map((r, idx) => {
+                if (!r.success) {
+                    return `<div class="card mb-2" style="border-left:3px solid #ef4444;padding:1rem 1.5rem;" data-aidx="${idx}">
+                        <strong>${r.filename || 'Unknown'}</strong> — <span style="color:#ef4444;">Analysis failed: ${(r.errors||[]).join(', ')}</span>
+                    </div>`;
+                }
+                const cls = r.classification || {};
+                const routing = r.routing || {};
+                const confidence = cls.confidence || 0;
+                const confColor = confidence >= 60 ? '#10b981' : confidence >= 30 ? '#f59e0b' : '#ef4444';
+                const docTypeDisplay = (cls.doc_type || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+                const extracted = r.extracted_data || {};
+                let fieldsHtml = '';
+                Object.entries(extracted).filter(([k,v]) => {
+                    if (typeof v === 'object') return false;
+                    if (v === 0 || v === '' || v === null || v === false) return false;
+                    return true;
+                }).slice(0, 6).forEach(([key, val]) => {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                    const isCurrency = typeof val === 'number' && val > 100;
+                    const dv = isCurrency ? '$' + val.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : val;
+                    fieldsHtml += `<div style="padding:0.25rem 0;"><span style="font-size:0.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.3px;">${label}</span><div style="font-weight:500;${isCurrency?'color:#10b981;':''}">${dv}</div></div>`;
+                });
+
+                return `<div class="card mb-2" style="padding:1.25rem 1.5rem;border-left:3px solid ${confColor};" data-aidx="${idx}">
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;">
+                        <div><strong>${r.filename}</strong><div style="font-size:0.85rem;color:var(--text-secondary);">${docTypeDisplay} — ${routing.summary || ''}</div></div>
+                        <span style="margin-left:auto;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.75rem;font-weight:600;background:${confColor}20;color:${confColor};">${confidence}%</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.5rem;">${fieldsHtml}</div>
+                    <div style="display:flex;gap:0.75rem;margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--border);">
+                        <button onclick="${confirmFn}(${idx})" style="padding:0.4rem 1rem;background:var(--accent);color:white;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:0.8rem;">Apply to Plan</button>
+                        <button onclick="rejectAdvisorResult(${idx},'${prefix}')" style="padding:0.4rem 1rem;background:transparent;color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:0.8rem;">Skip</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function doConfirmAll(results, targetType, targetId, prefix) {
+            const successResults = results.filter(r => r.success);
+            if (!successResults.length) return;
+
+            const btn = document.getElementById(prefix + 'ConfirmAllBtn');
+            btn.disabled = true;
+            btn.textContent = 'Applying...';
+
+            try {
+                const resp = await apiCall('/api/smart-upload/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_type: targetType, target_id: targetId, results: successResults }),
+                });
+                if (resp && resp.data) {
+                    btn.textContent = '✓ Applied ' + resp.data.applied_count + ' document(s)!';
+                    btn.style.background = '#10b981';
+                    document.querySelectorAll('[data-aidx]').forEach(card => {
+                        card.style.opacity = '0.6';
+                        card.style.borderLeftColor = '#10b981';
+                    });
+                } else {
+                    btn.textContent = 'Failed: ' + ((resp && resp.error) || 'Unknown');
+                    btn.style.background = '#ef4444';
+                }
+            } catch(err) {
+                btn.textContent = 'Error: ' + err.message;
+                btn.style.background = '#ef4444';
+            }
+            setTimeout(() => { btn.disabled = false; btn.textContent = 'Apply All'; btn.style.background = ''; }, 4000);
+        }
+
+        async function doConfirmSingle(results, idx, targetType, targetId, prefix) {
+            const result = results[idx];
+            if (!result || !result.success) return;
+
+            try {
+                const resp = await apiCall('/api/smart-upload/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_type: targetType, target_id: targetId, results: [result] }),
+                });
+                if (resp && resp.data) {
+                    const card = document.querySelector(`[data-aidx="${idx}"]`);
+                    if (card) {
+                        card.style.opacity = '0.6';
+                        card.style.borderLeftColor = '#10b981';
+                        const actions = card.querySelector('div:last-child');
+                        if (actions) actions.innerHTML = '<span style="color:#10b981;font-weight:600;">✓ Applied</span>';
+                    }
+                }
+            } catch(err) { alert('Error: ' + err.message); }
+        }
+
+        function rejectAdvisorResult(idx, prefix) {
+            const card = document.querySelector(`[data-aidx="${idx}"]`);
+            if (card) {
+                card.style.opacity = '0.3';
+                const actions = card.querySelector('div:last-child');
+                if (actions) actions.innerHTML = '<span style="color:var(--text-secondary);">Skipped</span>';
+            }
+            if (prefix === 'ind') indAnalysisResults[idx].success = false;
+            else bizAnalysisResults[idx].success = false;
         }
     </script>
 </body>

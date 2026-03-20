@@ -174,6 +174,114 @@
             font-weight: 700;
         }
 
+        /* Upload & Analyze Styles */
+        .upload-zone {
+            border: 2px dashed rgba(99,102,241,0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(99,102,241,0.04);
+            margin-bottom: 1.5rem;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--primary-blue);
+            background: rgba(99,102,241,0.08);
+            transform: translateY(-2px);
+        }
+        .upload-zone svg { margin-bottom: 1rem; color: var(--primary-blue); }
+        .upload-zone h3 { font-size: 1.125rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+        .upload-zone p { font-size: 0.875rem; color: var(--text-secondary); }
+        .upload-zone .btn-browse {
+            display: inline-block; margin-top: 1rem; padding: 0.625rem 1.5rem;
+            background: var(--primary-blue); color: white; border: none; border-radius: 8px;
+            font-weight: 600; cursor: pointer; font-size: 0.875rem;
+        }
+
+        .analysis-results { display: flex; flex-direction: column; gap: 1rem; }
+
+        .analysis-card {
+            background: var(--bg-card); border-radius: 12px; padding: 1.25rem 1.5rem;
+            border: 1px solid var(--border-light); transition: all 0.2s;
+        }
+        .analysis-card:hover { border-color: rgba(99,102,241,0.3); }
+        .analysis-card-header {
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;
+        }
+        .analysis-card-icon {
+            width: 44px; height: 44px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+        .analysis-card-icon.assets { background: rgba(16,185,129,0.15); color: #10b981; }
+        .analysis-card-icon.income { background: rgba(99,102,241,0.15); color: #6366f1; }
+        .analysis-card-icon.insurance { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .analysis-card-icon.retirement { background: rgba(139,92,246,0.15); color: #8b5cf6; }
+        .analysis-card-icon.estate { background: rgba(236,72,153,0.15); color: #ec4899; }
+        .analysis-card-icon.liabilities { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .analysis-card-icon.tax { background: rgba(59,130,246,0.15); color: #3b82f6; }
+        .analysis-card-icon.financials { background: rgba(16,185,129,0.15); color: #10b981; }
+        .analysis-card-icon.unknown { background: rgba(148,163,184,0.15); color: #94a3b8; }
+        .analysis-card-title { font-weight: 600; font-size: 1rem; color: var(--text-primary); }
+        .analysis-card-subtitle { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+        .analysis-card-confidence {
+            margin-left: auto; padding: 0.25rem 0.75rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 600;
+        }
+        .confidence-high { background: rgba(16,185,129,0.15); color: #10b981; }
+        .confidence-medium { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .confidence-low { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+        .analysis-card-body { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+        .analysis-field { padding: 0.5rem 0; }
+        .analysis-field-label { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .analysis-field-value { font-size: 0.95rem; color: var(--text-primary); font-weight: 500; margin-top: 2px; }
+        .analysis-field-value.currency { color: #10b981; }
+
+        .analysis-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border-light); }
+        .btn-confirm {
+            padding: 0.5rem 1.25rem; background: var(--primary-blue); color: white;
+            border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.875rem;
+        }
+        .btn-confirm:hover { background: #4f46e5; }
+        .btn-reject {
+            padding: 0.5rem 1.25rem; background: transparent; color: var(--text-secondary);
+            border: 1px solid var(--border-light); border-radius: 8px; cursor: pointer; font-size: 0.875rem;
+        }
+        .btn-confirm-all {
+            padding: 0.75rem 2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white; border: none; border-radius: 10px; font-weight: 700;
+            cursor: pointer; font-size: 1rem; width: 100%;
+        }
+        .btn-confirm-all:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99,102,241,0.4); }
+        .btn-confirm-all:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .upload-progress {
+            margin: 1rem 0; padding: 1rem 1.5rem; background: var(--bg-card);
+            border-radius: 10px; border: 1px solid var(--border-light);
+        }
+        .upload-progress-bar {
+            height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-top: 0.5rem;
+        }
+        .upload-progress-fill {
+            height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 3px; transition: width 0.3s ease; width: 0%;
+        }
+        .upload-progress-text { font-size: 0.875rem; color: var(--text-secondary); }
+
+        .import-history { margin-top: 2rem; }
+        .import-history h3 { font-size: 1.125rem; margin-bottom: 1rem; color: var(--text-primary); }
+        .history-item {
+            display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem;
+            background: var(--bg-card); border-radius: 8px; margin-bottom: 0.5rem;
+            border: 1px solid var(--border-light); font-size: 0.875rem;
+        }
+        .history-item-icon { font-size: 1.25rem; }
+        .history-item-name { font-weight: 500; color: var(--text-primary); }
+        .history-item-type { color: var(--text-secondary); font-size: 0.8rem; }
+        .history-item-date { margin-left: auto; color: var(--text-secondary); font-size: 0.8rem; }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -1236,6 +1344,16 @@
                             <span>Business Plan</span>
                         </button>
                     </li>
+                    <li class="nav-item" style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1rem;">
+                        <button class="nav-link" data-page="upload-analyze">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Upload &amp; Analyze</span>
+                        </button>
+                    </li>
                 </ul>
             </nav>
 
@@ -2146,6 +2264,57 @@
                     </div>
                 </div>
 
+                <!-- ═══════════════════════════════════════════ -->
+                <!-- Upload & Analyze Page                      -->
+                <!-- ═══════════════════════════════════════════ -->
+                <div class="page" id="upload-analyze">
+                    <h3 class="section-title" style="display:flex;align-items:center;gap:0.75rem;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue)" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload &amp; Analyze Documents
+                    </h3>
+                    <p style="color:var(--text-secondary);margin-bottom:1.5rem;font-size:0.925rem;">
+                        Upload financial PDFs and our intelligent analyzer will extract data and route it to the correct section of this household's plan. Supports brokerage statements, bank statements, tax documents, insurance policies, estate planning docs, mortgage docs, retirement plan statements, and more.
+                    </p>
+
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="smartUploadZone">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <h3>Drop PDF files here</h3>
+                        <p>or click to browse. Upload brokerage statements, bank statements, tax docs, insurance policies, retirement statements, and more.</p>
+                        <button class="btn-browse" type="button">Browse Files</button>
+                        <input type="file" id="smartFileInput" multiple accept=".pdf" style="display:none;">
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="upload-progress" id="smartUploadProgress" style="display:none;">
+                        <div class="upload-progress-text" id="smartProgressText">Analyzing documents...</div>
+                        <div class="upload-progress-bar">
+                            <div class="upload-progress-fill" id="smartProgressFill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <div class="analysis-results" id="smartAnalysisResults"></div>
+
+                    <!-- Confirm All Button -->
+                    <div id="smartConfirmAllWrap" style="display:none;margin-top:1.5rem;">
+                        <button class="btn-confirm-all" id="smartConfirmAllBtn" onclick="confirmAllAnalysis()">
+                            Apply All Extracted Data to Household Plan
+                        </button>
+                    </div>
+
+                    <!-- Import History -->
+                    <div class="import-history" id="smartImportHistory"></div>
+                </div>
+
             </div>
         </main>
     </div>
@@ -2508,11 +2677,17 @@
                     'accounts': 'Accounts',
                     'documents': 'Document Vault',
                     'messages': 'Messages',
-                    'business-plan': 'Business Plan'
+                    'business-plan': 'Business Plan',
+                    'upload-analyze': 'Upload & Analyze'
                 };
 
                 document.getElementById('pageTitle').textContent = titles[pageId] || 'Dashboard';
-                document.getElementById('pageSubtitle').textContent = 'Manage your wealth and financial goals';
+                document.getElementById('pageSubtitle').textContent = pageId === 'upload-analyze'
+                    ? 'Upload financial documents for intelligent extraction and routing'
+                    : 'Manage your wealth and financial goals';
+
+                // Load import history when switching to upload page
+                if (pageId === 'upload-analyze') { loadSmartImportHistory(); }
             });
         });
 
@@ -2622,6 +2797,290 @@
                 console.warn('Logout failed:', e);
                 // Still redirect on error
                 window.location.href = '/login';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // Smart Upload & Analyze Engine (Individual Portal)
+        // ═══════════════════════════════════════════════════════════
+        let smartAnalysisResults = [];
+
+        function getClientId() {
+            if (currentUser && currentUser.client_id) return currentUser.client_id;
+            if (currentUser && currentUser.id) return currentUser.id;
+            const params = new URLSearchParams(window.location.search);
+            return params.get('hid') || params.get('client_id') || '';
+        }
+
+        // Setup drag & drop and file input
+        (function initSmartUpload() {
+            const zone = document.getElementById('smartUploadZone');
+            const input = document.getElementById('smartFileInput');
+            if (!zone || !input) return;
+
+            zone.addEventListener('click', () => input.click());
+            zone.querySelector('.btn-browse').addEventListener('click', (e) => { e.stopPropagation(); input.click(); });
+
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                if (e.dataTransfer.files.length) handleSmartUpload(e.dataTransfer.files);
+            });
+
+            input.addEventListener('change', () => {
+                if (input.files.length) handleSmartUpload(input.files);
+                input.value = '';
+            });
+        })();
+
+        async function handleSmartUpload(files) {
+            const progressEl = document.getElementById('smartUploadProgress');
+            const progressText = document.getElementById('smartProgressText');
+            const progressFill = document.getElementById('smartProgressFill');
+            const resultsEl = document.getElementById('smartAnalysisResults');
+            const confirmWrap = document.getElementById('smartConfirmAllWrap');
+
+            progressEl.style.display = 'block';
+            resultsEl.innerHTML = '';
+            confirmWrap.style.display = 'none';
+            smartAnalysisResults = [];
+
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+            formData.append('target_type', 'individual');
+            formData.append('target_id', getClientId());
+
+            progressText.textContent = `Analyzing ${files.length} document${files.length > 1 ? 's' : ''}...`;
+            progressFill.style.width = '30%';
+
+            try {
+                const res = await fetch(API_BASE + '/api/smart-upload/analyze', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include',
+                });
+                const data = await res.json();
+                progressFill.style.width = '100%';
+
+                if (data.success && data.data && data.data.results) {
+                    smartAnalysisResults = data.data.results;
+                    progressText.textContent = `Analyzed ${data.data.successful} of ${data.data.total_files} files successfully`;
+                    renderAnalysisResults(smartAnalysisResults, resultsEl);
+                    if (smartAnalysisResults.some(r => r.success)) {
+                        confirmWrap.style.display = 'block';
+                    }
+                } else {
+                    progressText.textContent = 'Analysis failed: ' + (data.error || 'Unknown error');
+                    progressFill.style.background = '#ef4444';
+                }
+            } catch (err) {
+                progressText.textContent = 'Upload failed: ' + err.message;
+                progressFill.style.background = '#ef4444';
+            }
+
+            setTimeout(() => { progressEl.style.display = 'none'; }, 5000);
+        }
+
+        function renderAnalysisResults(results, container) {
+            container.innerHTML = results.map((r, idx) => {
+                if (!r.success) {
+                    return `<div class="analysis-card">
+                        <div class="analysis-card-header">
+                            <div class="analysis-card-icon unknown">&#x26A0;</div>
+                            <div>
+                                <div class="analysis-card-title">${r.filename || 'Unknown file'}</div>
+                                <div class="analysis-card-subtitle">Analysis failed: ${(r.errors || []).join(', ')}</div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+
+                const cls = r.classification || {};
+                const routing = r.routing || {};
+                const section = cls.profile_section || 'unknown';
+                const confidence = cls.confidence || 0;
+                const confClass = confidence >= 60 ? 'confidence-high' : confidence >= 30 ? 'confidence-medium' : 'confidence-low';
+
+                const iconMap = {
+                    assets: '&#x1F4B0;', income: '&#x1F4B5;', insurance: '&#x1F6E1;',
+                    retirement: '&#x1F3E6;', estate: '&#x1F4DC;', liabilities: '&#x1F4C9;',
+                    tax: '&#x1F4CB;', financials: '&#x1F4CA;', accounts: '&#x1F3E6;',
+                    valuation: '&#x1F4C8;', unknown: '&#x1F4C4;',
+                };
+
+                // Build field display
+                const extracted = r.extracted_data || {};
+                let fieldsHtml = '';
+                const fieldsToShow = Object.entries(extracted).filter(([k, v]) => {
+                    if (k === 'holdings' || k === 'beneficiaries' || k === 'details') return false;
+                    if (typeof v === 'object' && v !== null) return false;
+                    if (v === 0 || v === '' || v === null || v === false) return false;
+                    return true;
+                }).slice(0, 8);
+
+                fieldsToShow.forEach(([key, val]) => {
+                    const label = key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                    const isCurrency = typeof val === 'number' && val > 100;
+                    const displayVal = isCurrency ? '$' + val.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) : val;
+                    fieldsHtml += `<div class="analysis-field">
+                        <div class="analysis-field-label">${label}</div>
+                        <div class="analysis-field-value ${isCurrency ? 'currency' : ''}">${displayVal}</div>
+                    </div>`;
+                });
+
+                const docTypeDisplay = (cls.doc_type || 'unknown').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
+                return `<div class="analysis-card" data-idx="${idx}">
+                    <div class="analysis-card-header">
+                        <div class="analysis-card-icon ${section}">${iconMap[section] || iconMap.unknown}</div>
+                        <div>
+                            <div class="analysis-card-title">${r.filename}</div>
+                            <div class="analysis-card-subtitle">${docTypeDisplay} &mdash; ${routing.summary || ''}</div>
+                        </div>
+                        <div class="analysis-card-confidence ${confClass}">${confidence}% match</div>
+                    </div>
+                    <div class="analysis-card-body">${fieldsHtml}</div>
+                    <div class="analysis-actions">
+                        <button class="btn-confirm" onclick="confirmSingleAnalysis(${idx})">Apply to Plan</button>
+                        <button class="btn-reject" onclick="rejectAnalysis(${idx})">Skip</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function confirmSingleAnalysis(idx) {
+            const result = smartAnalysisResults[idx];
+            if (!result || !result.success) return;
+
+            const body = {
+                target_type: 'individual',
+                target_id: getClientId(),
+                results: [result],
+            };
+
+            try {
+                const res = await fetch(API_BASE + '/api/smart-upload/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const card = document.querySelector(`.analysis-card[data-idx="${idx}"]`);
+                    if (card) {
+                        card.style.borderColor = '#10b981';
+                        card.style.opacity = '0.6';
+                        const actions = card.querySelector('.analysis-actions');
+                        if (actions) actions.innerHTML = '<span style="color:#10b981;font-weight:600;">&#x2713; Applied successfully</span>';
+                    }
+                    loadSmartImportHistory();
+                } else {
+                    alert('Failed to apply: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function confirmAllAnalysis() {
+            const successResults = smartAnalysisResults.filter(r => r.success);
+            if (!successResults.length) return;
+
+            const btn = document.getElementById('smartConfirmAllBtn');
+            btn.disabled = true;
+            btn.textContent = 'Applying...';
+
+            const body = {
+                target_type: 'individual',
+                target_id: getClientId(),
+                results: successResults,
+            };
+
+            try {
+                const res = await fetch(API_BASE + '/api/smart-upload/confirm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.textContent = `&#x2713; Applied ${data.data.applied_count} document(s) successfully!`;
+                    btn.style.background = '#10b981';
+                    document.querySelectorAll('.analysis-card').forEach(card => {
+                        card.style.borderColor = '#10b981';
+                        card.style.opacity = '0.6';
+                        const actions = card.querySelector('.analysis-actions');
+                        if (actions) actions.innerHTML = '<span style="color:#10b981;font-weight:600;">&#x2713; Applied</span>';
+                    });
+                    loadSmartImportHistory();
+                } else {
+                    btn.textContent = 'Failed: ' + (data.error || 'Unknown error');
+                    btn.style.background = '#ef4444';
+                }
+            } catch (err) {
+                btn.textContent = 'Error: ' + err.message;
+                btn.style.background = '#ef4444';
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = 'Apply All Extracted Data to Household Plan';
+                btn.style.background = '';
+            }, 4000);
+        }
+
+        function rejectAnalysis(idx) {
+            const card = document.querySelector(`.analysis-card[data-idx="${idx}"]`);
+            if (card) {
+                card.style.opacity = '0.3';
+                const actions = card.querySelector('.analysis-actions');
+                if (actions) actions.innerHTML = '<span style="color:var(--text-secondary);">Skipped</span>';
+            }
+            smartAnalysisResults[idx].success = false;
+        }
+
+        async function loadSmartImportHistory() {
+            const clientId = getClientId();
+            if (!clientId) return;
+            const historyEl = document.getElementById('smartImportHistory');
+            if (!historyEl) return;
+
+            try {
+                const res = await apiGet('/api/smart-upload/history/' + clientId + '?type=individual');
+                if (res && res.success && res.data && res.data.length > 0) {
+                    const items = res.data.slice(0, 20);
+                    historyEl.innerHTML = '<h3>Import History</h3>' + items.map(item => {
+                        const iconMap = {
+                            brokerage_statement: '&#x1F4B0;', bank_statement: '&#x1F3E6;',
+                            tax_return_individual: '&#x1F4CB;', w2: '&#x1F4B5;', '1099': '&#x1F4B5;',
+                            insurance_life: '&#x1F6E1;', insurance_property: '&#x1F6E1;',
+                            estate_will_trust: '&#x1F4DC;', mortgage_real_estate: '&#x1F3E0;',
+                            retirement_401k_ira: '&#x1F4CA;', social_security: '&#x1F4CA;',
+                            personal_financial_statement: '&#x1F4C4;', pay_stub: '&#x1F4B5;',
+                        };
+                        const icon = iconMap[item.doc_type] || '&#x1F4C4;';
+                        const dt = item.imported_at ? new Date(item.imported_at).toLocaleDateString() : '';
+                        const docLabel = (item.doc_type || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                        return `<div class="history-item">
+                            <div class="history-item-icon">${icon}</div>
+                            <div>
+                                <div class="history-item-name">${item.filename || 'Document'}</div>
+                                <div class="history-item-type">${docLabel} &mdash; ${item.summary || ''}</div>
+                            </div>
+                            <div class="history-item-date">${dt}</div>
+                        </div>`;
+                    }).join('');
+                } else {
+                    historyEl.innerHTML = '';
+                }
+            } catch (err) {
+                console.warn('Could not load import history:', err);
             }
         }
 

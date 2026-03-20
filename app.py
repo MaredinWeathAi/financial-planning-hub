@@ -44,6 +44,7 @@ from reconciler import ReconciliationEngine
 from parsers import get_parser, auto_detect_source
 from biz_pdf_parser import BusinessPDFImporter, BusinessDataStore
 from docusign_import import DocuSignIndividualParser, profile_to_client_dict
+from smart_pdf_analyzer import SmartPDFAnalyzer, ProfileMerger, classify_document
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -1060,6 +1061,177 @@ def import_history():
                 })
 
         return api_response(True, data=sorted(files, key=lambda x: x["uploaded_at"], reverse=True))
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Smart PDF Upload & Analyze API
+# ═══════════════════════════════════════════════════════════════════════════
+
+@app.route("/api/smart-upload/analyze", methods=["POST"])
+@require_auth
+def smart_upload_analyze():
+    """
+    Upload one or more PDFs for intelligent analysis.
+    Returns classification, extracted data, and routing suggestions.
+    Does NOT apply changes — that requires a separate confirm call.
+    """
+    try:
+        if "files" not in request.files and "file" not in request.files:
+            return api_response(False, error="No files provided")
+
+        files = request.files.getlist("files") or [request.files.get("file")]
+        target_type = request.form.get("target_type", "individual")  # "individual" or "business"
+        target_id = request.form.get("target_id", "")  # client_id or business_id
+
+        uploads_dir = os.path.join(DATA_DIR, "uploads", "smart_analyze")
+        os.makedirs(uploads_dir, exist_ok=True)
+
+        analyzer = SmartPDFAnalyzer()
+        results = []
+
+        for file in files:
+            if not file or not file.filename:
+                continue
+
+            filename = secure_filename(file.filename)
+            filepath = os.path.join(uploads_dir, f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{filename}")
+            file.save(filepath)
+
+            # Analyze the PDF
+            analysis = analyzer.analyze(filepath)
+            analysis["target_type"] = target_type
+            analysis["target_id"] = target_id
+
+            results.append(analysis)
+
+        return api_response(True, data={
+            "total_files": len(results),
+            "successful": sum(1 for r in results if r.get("success")),
+            "results": results,
+        })
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/smart-upload/confirm", methods=["POST"])
+@require_auth
+def smart_upload_confirm():
+    """
+    Confirm and apply analyzed PDF data to a household or business profile.
+    Expects JSON body with:
+      - target_type: "individual" or "business"
+      - target_id: client_id or business_id
+      - results: list of analysis results to apply (from /api/smart-upload/analyze)
+    """
+    try:
+        body = request.get_json()
+        if not body:
+            return api_response(False, error="JSON body required")
+
+        target_type = body.get("target_type", "individual")
+        target_id = body.get("target_id", "")
+        results_to_apply = body.get("results", [])
+
+        if not target_id:
+            return api_response(False, error="target_id is required")
+
+        if not results_to_apply:
+            return api_response(False, error="No results to apply")
+
+        stores = get_data_stores()
+        applied = []
+
+        if target_type == "individual":
+            client = stores["clients"].get(target_id)
+            if not client:
+                return api_response(False, error=f"Client not found: {target_id}")
+
+            profile = client.financial_profile or {}
+
+            for result in results_to_apply:
+                if result.get("success"):
+                    profile = ProfileMerger.merge_into_individual_profile(profile, result)
+                    applied.append({
+                        "filename": result.get("filename", ""),
+                        "doc_type": result.get("classification", {}).get("doc_type", ""),
+                        "summary": result.get("routing", {}).get("summary", ""),
+                    })
+
+            client.financial_profile = profile
+            stores["clients"].update(client)
+
+            return api_response(True, data={
+                "target_type": "individual",
+                "target_id": target_id,
+                "client_name": client.display_name,
+                "applied_count": len(applied),
+                "applied": applied,
+            })
+
+        elif target_type == "business":
+            business_store = stores.get("business")
+            if not business_store:
+                return api_response(False, error="Business store not available")
+
+            business = business_store.get_business(target_id)
+            if not business:
+                return api_response(False, error=f"Business not found: {target_id}")
+
+            for result in results_to_apply:
+                if result.get("success"):
+                    business = ProfileMerger.merge_into_business_profile(business, result)
+                    applied.append({
+                        "filename": result.get("filename", ""),
+                        "doc_type": result.get("classification", {}).get("doc_type", ""),
+                        "summary": result.get("routing", {}).get("summary", ""),
+                    })
+
+            business_store.add_business(business)
+
+            return api_response(True, data={
+                "target_type": "business",
+                "target_id": target_id,
+                "business_name": business.get("name", ""),
+                "applied_count": len(applied),
+                "applied": applied,
+            })
+
+        else:
+            return api_response(False, error=f"Invalid target_type: {target_type}")
+
+    except Exception as e:
+        return api_response(False, error=str(e))
+
+
+@app.route("/api/smart-upload/history/<target_id>", methods=["GET"])
+@require_auth
+def smart_upload_history(target_id):
+    """Get import history for a client or business."""
+    try:
+        stores = get_data_stores()
+        target_type = request.args.get("type", "individual")
+
+        if target_type == "individual":
+            client = stores["clients"].get(target_id)
+            if not client:
+                return api_response(False, error="Client not found")
+            history = (client.financial_profile or {}).get("import_history", [])
+        elif target_type == "business":
+            business_store = stores.get("business")
+            if not business_store:
+                return api_response(False, error="Business store not available")
+            business = business_store.get_business(target_id)
+            if not business:
+                return api_response(False, error="Business not found")
+            history = business.get("import_history", [])
+        else:
+            history = []
+
+        return api_response(True, data=history)
 
     except Exception as e:
         return api_response(False, error=str(e))
